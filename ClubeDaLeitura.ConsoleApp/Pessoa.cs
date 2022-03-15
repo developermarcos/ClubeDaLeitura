@@ -58,7 +58,7 @@ namespace ClubeDaLeitura.ConsoleApp
             conversaoRealizada = int.TryParse(lerDados, out id);
             if (conversaoRealizada == true && ExisteNoArray(pessoas, id) == true)
             {
-                Console.WriteLine("\nCaso deseje manter informação anterior, mantenha o campo vazio.");
+                Console.WriteLine("\nCaso deseje manter informação anterior, mantenha o campo vazio e pressione enter.");
                 Console.Write("Pessoa em Edição | ");
                 ImprimirPessoa(pessoas, id);
                 InputDados(out nome, out nomeResponsavel, out telefone, out endereco);
@@ -87,7 +87,7 @@ namespace ClubeDaLeitura.ConsoleApp
 
             Console.WriteLine("\nListagem de Amigos cadastrados.");
             ImprimirPessoas(pessoas);
-            Console.Write("\nInforme o ID que deseja alterar: ");
+            Console.Write("\nInforme o ID que deseja excluir: ");
             lerDados = Console.ReadLine();
             conversaoRealizada = int.TryParse(lerDados, out id);
             if (conversaoRealizada == true && ExisteNoArray(pessoas, id) == true)
@@ -99,7 +99,7 @@ namespace ClubeDaLeitura.ConsoleApp
             }
             else
             {
-                Console.WriteLine("Usuário excluído com sucesso!");
+                Console.WriteLine("Nenhum usuário excluído!");
                 Console.ReadKey();
                 Console.Clear();
             }

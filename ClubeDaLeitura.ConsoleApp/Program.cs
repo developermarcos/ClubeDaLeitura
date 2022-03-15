@@ -21,6 +21,7 @@ namespace ClubeDaLeitura.ConsoleApp
         static void Main(string[] args)
         {
             Pessoa.PopularPessoas(ref amigos);
+            Caixa.PopularCaixas(caixas);
             while(sairSistema == false)
             {
                 Menu();
@@ -33,18 +34,30 @@ namespace ClubeDaLeitura.ConsoleApp
             int opcao;
             bool conversaoRealizada;
 
-            Console.ForegroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.BackgroundColor = ConsoleColor.Gray;
-            Console.WriteLine("------------------------------Menus------------------------------");
+            Console.WriteLine(" --------------------------------------------------------------- ");
+            Console.WriteLine("||                       Clube da Leitura                      ||");
+            Console.WriteLine(" --------------------------------------------------------------- ");
+            Console.ResetColor();
+
+            //Console.ForegroundColor = ConsoleColor.Black;
+            //Console.BackgroundColor = ConsoleColor.Gray;
+            Console.WriteLine("\n--------------------------Menu Principal-------------------------");
             Console.ResetColor();
             Console.WriteLine("-----------------------------------------------------------------");
-            Console.Write($"|| {Telas.Amigos} ({Telas.Amigos.GetHashCode()}) |");
-            Console.Write($"| {Telas.Revistas} ({Telas.Revistas.GetHashCode()}) |");
-            Console.Write($"| {Telas.Caixas} ({Telas.Caixas.GetHashCode()}) |");
-            Console.Write($"| {Telas.Emprestimos} ({Telas.Emprestimos.GetHashCode()}) ||");
+            Console.Write($"|| ({Telas.Amigos.GetHashCode()}) {Telas.Amigos} |");
+            Console.Write($"| ({Telas.Revistas.GetHashCode()}) {Telas.Revistas} |");
+            Console.Write($"| ({Telas.Caixas.GetHashCode()}) {Telas.Caixas} |");
+            Console.Write($"| ({Telas.Emprestimos.GetHashCode()}) {Telas.Emprestimos} ||");
             Console.WriteLine("\n-----------------------------------------------------------------");
             Console.Write("Informe a opção desejada: ");
             lerTela = Console.ReadLine();
+            if(lerTela == "")
+            {
+                Console.Clear();
+                return;
+            }
             conversaoRealizada = int.TryParse(lerTela, out opcao);
             if(conversaoRealizada == true)
             {
@@ -58,7 +71,6 @@ namespace ClubeDaLeitura.ConsoleApp
                         break;
                     case (int)Telas.Caixas:
                         MenuCaixas();
-                        Console.ReadKey();
                         break;
                     case (int)Telas.Emprestimos:
                         Console.WriteLine("Tela amigos");
@@ -87,13 +99,18 @@ namespace ClubeDaLeitura.ConsoleApp
             Console.WriteLine("------------------------------Amigos------------------------------");
             Console.ResetColor();
             Console.WriteLine("-----------------------------------------------------------------");
-            Console.Write($"|| {Amigos.Listar} ({Amigos.Listar.GetHashCode()}) |");
-            Console.Write($"| {Amigos.Cadastrar} ({Amigos.Cadastrar.GetHashCode()}) |");
-            Console.Write($"| {Amigos.Editar} ({Amigos.Editar.GetHashCode()}) |");
-            Console.Write($"| {Amigos.Excluir} ({Amigos.Excluir.GetHashCode()}) ||");
+            Console.Write($"|| ({Amigos.Listar.GetHashCode()}) {Amigos.Listar} |");
+            Console.Write($"| ({Amigos.Cadastrar.GetHashCode()}) {Amigos.Cadastrar} |");
+            Console.Write($"| ({Amigos.Editar.GetHashCode()}) {Amigos.Editar} |");
+            Console.Write($"| ({Amigos.Excluir.GetHashCode()}) {Amigos.Excluir} ||");
             Console.WriteLine("\n-----------------------------------------------------------------");
             Console.Write("Informe a opção desejada: ");
             lerTela = Console.ReadLine();
+            if (lerTela == "")
+            {
+                Console.Clear();
+                return;
+            }
             conversaoRealizada = int.TryParse(lerTela, out opcao);
             if (conversaoRealizada == true)
             {
@@ -132,16 +149,21 @@ namespace ClubeDaLeitura.ConsoleApp
             bool conversaoRealizada;
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("------------------------------Amigos------------------------------");
+            Console.WriteLine("----------------------------Caixas----------------------------");
             Console.ResetColor();
-            Console.WriteLine("-----------------------------------------------------------------");
-            Console.Write($"|| {Caixas.Listar} ({Caixas.Listar.GetHashCode()}) |");
-            Console.Write($"| {Caixas.Cadastrar} ({Caixas.Cadastrar.GetHashCode()}) |");
-            Console.Write($"| {Caixas.Editar} ({Caixas.Editar.GetHashCode()}) |");
-            Console.Write($"| {Caixas.Excluir} ({Caixas.Excluir.GetHashCode()}) ||");
-            Console.WriteLine("\n-----------------------------------------------------------------");
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.Write($"|| ({Caixas.Listar.GetHashCode()}) {Caixas.Listar} |");
+            Console.Write($"| ({Caixas.Cadastrar.GetHashCode()}) {Caixas.Cadastrar} |");
+            Console.Write($"| ({Caixas.Editar.GetHashCode()}) {Caixas.Editar} |");
+            Console.Write($"| ({Caixas.Excluir.GetHashCode()}) {Caixas.Excluir} ||");
+            Console.WriteLine("\n--------------------------------------------------------------");
             Console.Write("Informe a opção desejada: ");
             lerTela = Console.ReadLine();
+            if (lerTela == "")
+            {
+                Console.Clear();
+                return;
+            }
             conversaoRealizada = int.TryParse(lerTela, out opcao);
             if (conversaoRealizada == true)
             {
@@ -162,6 +184,8 @@ namespace ClubeDaLeitura.ConsoleApp
                         break;
                     default:
                         Error.Mensagem();
+                        Console.ReadKey();
+                        Console.Clear();
                         break;
                 }
             }
