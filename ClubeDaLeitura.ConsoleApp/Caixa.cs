@@ -26,15 +26,15 @@ namespace ClubeDaLeitura.ConsoleApp
         public string etiqueta;
         public int numero;
 
-        public void Cadastrar(Caixa[] caixas)
-        {
-
-        }
-        public void Editar(ref Caixa[] caixas)
-        {
-
-        }
         public void Listar(Caixa[] caixas)
+        {
+
+        }
+        public void Cadastrar(ref Caixa[] caixas)
+        {
+
+        }
+        public void Editar(Caixa[] caixas)
         {
 
         }
