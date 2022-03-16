@@ -65,17 +65,16 @@ namespace ClubeDaLeitura.ConsoleApp
                 switch (opcao)
                 {
                     case (int)Telas.Amigos:
-                        MenuAmigos();
+                        MenuAmigo();
                         break;
                     case (int)Telas.Revistas:
-                        MenuRevistas();
+                        MenuRevista();
                         break;
                     case (int)Telas.Caixas:
-                        MenuCaixas();
+                        MenuCaixa();
                         break;
                     case (int)Telas.Emprestimos:
-                        Console.WriteLine("Tela amigos");
-                        Console.ReadKey();
+                        MenuEmprestimo();
                         break;
                     default:
                         Error.Mensagem();
@@ -91,7 +90,7 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
             }
         }
-        public static void MenuAmigos()
+        public static void MenuAmigo()
         {
             string lerTela;
             int opcao;
@@ -144,7 +143,7 @@ namespace ClubeDaLeitura.ConsoleApp
             }
 
         }
-        public static void MenuCaixas()
+        public static void MenuCaixa()
         {
             string lerTela;
             int opcao;
@@ -198,7 +197,7 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
             }
         }
-        public static void MenuRevistas()
+        public static void MenuRevista()
         {
             string lerTela;
             int opcao;
@@ -237,6 +236,60 @@ namespace ClubeDaLeitura.ConsoleApp
                         break;
                     case (int)Amigos.Excluir:
                         revista.Excluir(revistas, caixas);
+                        break;
+                    default:
+                        Error.Mensagem();
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                }
+            }
+            else
+            {
+                Error.Mensagem();
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+        public static void MenuEmprestimo()
+        {
+            string lerTela;
+            int opcao;
+            bool conversaoRealizada;
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("--------------------------Emprestimos-------------------------");
+            Console.ResetColor();
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.Write($"|| ({Emprestimos.Listar.GetHashCode()}) {Emprestimos.Listar} |");
+            Console.Write($"| ({Emprestimos.Cadastrar.GetHashCode()}) {Emprestimos.Cadastrar} |");
+            Console.Write($"| ({Emprestimos.Editar.GetHashCode()}) {Emprestimos.Editar} |");
+            Console.Write($"| ({Emprestimos.Excluir.GetHashCode()}) {Emprestimos.Excluir} ||");
+            Console.WriteLine("\n--------------------------------------------------------------");
+            Console.Write("Informe a opção desejada: ");
+            lerTela = Console.ReadLine();
+            if (lerTela == "")
+            {
+                Console.Clear();
+                return;
+            }
+            conversaoRealizada = int.TryParse(lerTela, out opcao);
+            if (conversaoRealizada == true)
+            {
+                Emprestimo emprestimo = new Emprestimo();
+                switch (opcao)
+                {
+                    case (int)Amigos.Listar:
+                        emprestimo.Listar(emprestimos, amigos, revistas, caixas);
+                        break;
+                    case (int)Amigos.Cadastrar:
+                        emprestimo.Cadastrar(emprestimos, amigos, revistas, caixas);
+                        break;
+                    case (int)Amigos.Editar:
+                        emprestimo.Editar(emprestimos, amigos, revistas, caixas);
+                        break;
+                    case (int)Amigos.Excluir:
+                        emprestimo.Excluir(emprestimos, amigos, revistas, caixas);
                         break;
                     default:
                         Error.Mensagem();

@@ -24,10 +24,10 @@ namespace ClubeDaLeitura.ConsoleApp
     
     internal class Revista
     {
-        int revistaId, revistaCaixaId;
-        string numeroEdicao;
-        DateTime anoRevista;
-        TipoColecao tipoColecao;
+        public int revistaId, revistaCaixaId;
+        public string numeroEdicao;
+        public DateTime anoRevista;
+        public TipoColecao tipoColecao;
         public Revista() { }
         public Revista(int revistaId, string numeroEdicao, DateTime anoRevista, TipoColecao tipoColecao, int revistaCaixaId)
         {
@@ -262,7 +262,7 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return posicao;
         }
-        private static void ImpimirRevistas(Revista[] revistas, Caixa[] caixas)
+        public static void ImpimirRevistas(Revista[] revistas, Caixa[] caixas)
         {
             foreach (var revista in revistas)
             {
@@ -272,7 +272,7 @@ namespace ClubeDaLeitura.ConsoleApp
                 }
             }
         }
-        private static bool ExisteNoArray(Revista[] revistas, int id)
+        public static bool ExisteNoArray(Revista[] revistas, int id)
         {
             bool existe = false;
 

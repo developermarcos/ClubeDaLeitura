@@ -108,7 +108,7 @@ namespace ClubeDaLeitura.ConsoleApp
         #endregion
 
         #region Métodos auxiliares
-        private void ImprimirPessoas(Pessoa[] pessoas)
+        public static void ImprimirPessoas(Pessoa[] pessoas)
         {
             foreach (var p in pessoas)
             {
@@ -146,13 +146,13 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return posicao;
         }
-        private static bool ExisteNoArray(Pessoa[] pessoas, int id)
+        public static bool ExisteNoArray(Pessoa[] pessoas, int id)
         {
             bool existeNoArray = false;
 
-            foreach (var pessoa in pessoas)
+            for (int i = 0; i < pessoas.Length; i++)
             {
-                if(pessoa.pessoaID == id)
+                if (pessoas[i] != null && pessoas[i].pessoaID == id)
                 {
                     existeNoArray = true;
                     break;
