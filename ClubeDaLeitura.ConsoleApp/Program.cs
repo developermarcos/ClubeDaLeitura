@@ -22,6 +22,7 @@ namespace ClubeDaLeitura.ConsoleApp
         {
             Pessoa.PopularPessoas(ref amigos);
             Caixa.PopularCaixas(caixas);
+            Revista.PopularArrayRevistas(revistas);
             while(sairSistema == false)
             {
                 Menu();
@@ -79,6 +80,7 @@ namespace ClubeDaLeitura.ConsoleApp
                     default:
                         Error.Mensagem();
                         Console.ReadKey();
+                        Console.Clear();
                         break;
                 }
             }
@@ -198,7 +200,57 @@ namespace ClubeDaLeitura.ConsoleApp
         }
         public static void MenuRevistas()
         {
-
+            string lerTela;
+            int opcao;
+            bool conversaoRealizada;
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("---------------------------Revistas---------------------------");
+            Console.ResetColor();
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.Write($"|| ({Revistas.Listar.GetHashCode()}) {Revistas.Listar} |");
+            Console.Write($"| ({Revistas.Cadastrar.GetHashCode()}) {Revistas.Cadastrar} |");
+            Console.Write($"| ({Revistas.Editar.GetHashCode()}) {Revistas.Editar} |");
+            Console.Write($"| ({Revistas.Excluir.GetHashCode()}) {Revistas.Excluir} ||");
+            Console.WriteLine("\n--------------------------------------------------------------");
+            Console.Write("Informe a opção desejada: ");
+            lerTela = Console.ReadLine();
+            if (lerTela == "")
+            {
+                Console.Clear();
+                return;
+            }
+            conversaoRealizada = int.TryParse(lerTela, out opcao);
+            if (conversaoRealizada == true)
+            {
+                Revista revista = new Revista();
+                switch (opcao)
+                {
+                    case (int)Amigos.Listar:
+                        revista.Listar(revistas, caixas);
+                        break;
+                    case (int)Amigos.Cadastrar:
+                        revista.Cadastrar(revistas, caixas);
+                        break;
+                    case (int)Amigos.Editar:
+                        revista.Editar(ref revistas, caixas);
+                        break;
+                    case (int)Amigos.Excluir:
+                        revista.Excluir(revistas, caixas);
+                        break;
+                    default:
+                        Error.Mensagem();
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                }
+            }
+            else
+            {
+                Error.Mensagem();
+                Console.ReadKey();
+                Console.Clear();
+            }
         }
     }
     public class Error

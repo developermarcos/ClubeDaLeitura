@@ -25,6 +25,7 @@ namespace ClubeDaLeitura.ConsoleApp
             this.telefone = telefone;
             this.endereco = endereco;
         }
+
         #region Métodos principais
         public void Cadastrar(ref Pessoa[] pessoas)
         {
@@ -145,7 +146,7 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return posicao;
         }
-        private bool ExisteNoArray(Pessoa[] pessoas, int id)
+        private static bool ExisteNoArray(Pessoa[] pessoas, int id)
         {
             bool existeNoArray = false;
 

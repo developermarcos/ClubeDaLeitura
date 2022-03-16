@@ -9,9 +9,9 @@ namespace ClubeDaLeitura.ConsoleApp
     public enum CoresCaixas
     {
         Azul = 1,
-        Preto = 2,
-        Branco = 3,
-        Amarelo = 4
+        Preta = 2,
+        Branca = 3,
+        Amarela = 4
     }
     public enum Caixas
     {
@@ -46,14 +46,15 @@ namespace ClubeDaLeitura.ConsoleApp
         {
             string etiqueta, lerTela;
             int numero, posicaoCadastro, idInsercao;
-            
+            CoresCaixas cor;
+
             Console.WriteLine("\nCadastrar caixa");
             
             posicaoCadastro = PosicaoInserirArray(caixas);
             if(posicaoCadastro != -1)
             {
                 idInsercao = posicaoCadastro;
-                CoresCaixas cor;
+                
                 InputDados(out etiqueta, out lerTela, out numero, out cor);
 
                 Caixa caixaCadastro = new Caixa(idInsercao, cor, etiqueta, numero);
@@ -81,6 +82,7 @@ namespace ClubeDaLeitura.ConsoleApp
             ImprimirCaixas(caixas);
             Console.Write("Informe o ID da caixa que deseja editar: ");
             lerTela = Console.ReadLine();
+
             conversaoRealizada = int.TryParse(lerTela, out idEditar);
             if(conversaoRealizada == true && ExisteNoArray(caixas, idEditar) == true)
             {
@@ -137,7 +139,7 @@ namespace ClubeDaLeitura.ConsoleApp
         }
 
         #region Métodos auxiliares
-        private static void ImprimirCaixas(Caixa[] caixas)
+        public static void ImprimirCaixas(Caixa[] caixas)
         {
             foreach (var caixa in caixas)
             {
@@ -162,9 +164,9 @@ namespace ClubeDaLeitura.ConsoleApp
                 int corInformada;
                 Console.Write($"Selecione a cor da caixa");
                 Console.Write($" ({CoresCaixas.Azul.GetHashCode()}) {CoresCaixas.Azul} |");
-                Console.Write($" ({CoresCaixas.Preto.GetHashCode()}) {CoresCaixas.Preto} |");
-                Console.Write($" ({CoresCaixas.Branco.GetHashCode()}) {CoresCaixas.Branco} |");
-                Console.Write($" ({CoresCaixas.Amarelo.GetHashCode()}) {CoresCaixas.Amarelo}: ");
+                Console.Write($" ({CoresCaixas.Preta.GetHashCode()}) {CoresCaixas.Preta} |");
+                Console.Write($" ({CoresCaixas.Branca.GetHashCode()}) {CoresCaixas.Branca} |");
+                Console.Write($" ({CoresCaixas.Amarela.GetHashCode()}) {CoresCaixas.Amarela}: ");
                 lerTela = Console.ReadLine();
 
                 conversaoRealizada = int.TryParse(lerTela, out corInformada);
@@ -176,16 +178,16 @@ namespace ClubeDaLeitura.ConsoleApp
                             cor = CoresCaixas.Azul;
                             sairLoop = true;
                             break;
-                        case (int)CoresCaixas.Preto:
-                            cor = CoresCaixas.Preto;
+                        case (int)CoresCaixas.Preta:
+                            cor = CoresCaixas.Preta;
                             sairLoop = true;
                             break;
-                        case (int)CoresCaixas.Branco:
-                            cor = CoresCaixas.Branco;
+                        case (int)CoresCaixas.Branca:
+                            cor = CoresCaixas.Branca;
                             sairLoop = true;
                             break;
-                        case (int)CoresCaixas.Amarelo:
-                            cor = CoresCaixas.Amarelo;
+                        case (int)CoresCaixas.Amarela:
+                            cor = CoresCaixas.Amarela;
                             sairLoop = true;
                             break;
                         default:
@@ -216,7 +218,7 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return posicao;
         }
-        private static bool ExisteNoArray(Caixa[] caixas, int id)
+        public static bool ExisteNoArray(Caixa[] caixas, int id)
         {
             bool existe = false;
 
@@ -227,10 +229,18 @@ namespace ClubeDaLeitura.ConsoleApp
         }
         public static void PopularCaixas(Caixa[] caixas)
         {
-            Caixa c1 = new Caixa(0, CoresCaixas.Preto, "Ação", 123);
-            Caixa c2 = new Caixa(1, CoresCaixas.Amarelo, "Suspense", 123);
+            Caixa c1 = new Caixa(0, CoresCaixas.Preta, "Edição especial", 123);
+            Caixa c2 = new Caixa(1, CoresCaixas.Amarela, "Doação", 123);
             caixas[0] = c1;
             caixas[1] = c2;
+        }
+        #endregion
+
+        #region métodos auxiliares classes externas
+        public void ImprimeCaixaEmRevista()
+        {
+            if (this != null && this.etiqueta != "")
+                Console.WriteLine($"ID: {this.caixaId} | Etiqueta: {this.etiqueta} | Cor: {this.cor} | Numero: {this.numero}");
         }
         #endregion
     }
