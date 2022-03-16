@@ -23,6 +23,7 @@ namespace ClubeDaLeitura.ConsoleApp
             Pessoa.PopularPessoas(ref amigos);
             Caixa.PopularCaixas(caixas);
             Revista.PopularArrayRevistas(revistas);
+            Emprestimo.PopularArray(emprestimos);
             while(sairSistema == false)
             {
                 Menu();
@@ -258,14 +259,18 @@ namespace ClubeDaLeitura.ConsoleApp
             bool conversaoRealizada;
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("--------------------------Emprestimos-------------------------");
+            Console.WriteLine("------------------------------------------------------Emprestimos------------------------------------------------------");
             Console.ResetColor();
-            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------------");
             Console.Write($"|| ({Emprestimos.Listar.GetHashCode()}) {Emprestimos.Listar} |");
             Console.Write($"| ({Emprestimos.Cadastrar.GetHashCode()}) {Emprestimos.Cadastrar} |");
             Console.Write($"| ({Emprestimos.Editar.GetHashCode()}) {Emprestimos.Editar} |");
-            Console.Write($"| ({Emprestimos.Excluir.GetHashCode()}) {Emprestimos.Excluir} ||");
-            Console.WriteLine("\n--------------------------------------------------------------");
+            Console.Write($"| ({Emprestimos.Excluir.GetHashCode()}) {Emprestimos.Excluir} |");
+            Console.Write($"| ({Emprestimos.Fechar.GetHashCode()}) {Emprestimos.Fechar} |");
+            Console.Write($"| ({Emprestimos.Mensal.GetHashCode()}) {Emprestimos.Mensal} |");
+            Console.Write($"| ({Emprestimos.Abertos.GetHashCode()}) {Emprestimos.Abertos} |");
+            Console.Write($"| ({Emprestimos.Diario.GetHashCode()}) {Emprestimos.Diario} ||");
+            Console.WriteLine("\n-----------------------------------------------------------------------------------------------------------------------");
             Console.Write("Informe a opção desejada: ");
             lerTela = Console.ReadLine();
             if (lerTela == "")
@@ -279,17 +284,29 @@ namespace ClubeDaLeitura.ConsoleApp
                 Emprestimo emprestimo = new Emprestimo();
                 switch (opcao)
                 {
-                    case (int)Amigos.Listar:
+                    case (int)Emprestimos.Listar:
                         emprestimo.Listar(emprestimos, amigos, revistas, caixas);
                         break;
-                    case (int)Amigos.Cadastrar:
+                    case (int)Emprestimos.Cadastrar:
                         emprestimo.Cadastrar(emprestimos, amigos, revistas, caixas);
                         break;
-                    case (int)Amigos.Editar:
+                    case (int)Emprestimos.Editar:
                         emprestimo.Editar(emprestimos, amigos, revistas, caixas);
                         break;
-                    case (int)Amigos.Excluir:
+                    case (int)Emprestimos.Excluir:
                         emprestimo.Excluir(emprestimos, amigos, revistas, caixas);
+                        break;
+                    case (int)Emprestimos.Fechar:
+                        emprestimo.Fechar(emprestimos, amigos, revistas, caixas);
+                        break;
+                    case (int)Emprestimos.Mensal:
+                        emprestimo.Mensal(emprestimos, amigos, revistas, caixas);
+                        break;
+                    case (int)Emprestimos.Abertos:
+                        emprestimo.Abertos(emprestimos, amigos, revistas, caixas);
+                        break;
+                    case (int)Emprestimos.Diario:
+                        emprestimo.Diario(emprestimos, amigos, revistas, caixas);
                         break;
                     default:
                         Error.Mensagem();
