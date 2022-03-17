@@ -9,34 +9,33 @@ namespace ClubeDaLeitura.ConsoleApp
         Editar = 3,
         Excluir = 4
     }
-    internal class Pessoa
+    internal class PessoaAntiga
     {
         public int ID;
         public string nome;
         public string nomeResponsavel;
         public string telefone;
         public string endereco;
-        public bool posicaoPreenchida;
-        public Pessoa(){}
-        public Pessoa(int id, string nome, string nomeResponsavel, string telefone, string endereco, bool posicaoPreenchida)
+        public PessoaAntiga(){}
+        public PessoaAntiga(int id, string nome, string nomeResponsavel, string telefone, string endereco)
         {
             this.ID = id;
             this.nome = nome;
             this.nomeResponsavel = nomeResponsavel;
             this.telefone = telefone;
             this.endereco = endereco;
-            this.posicaoPreenchida = posicaoPreenchida;
         }
 
         #region Métodos principais
-        public void Cadastrar(ref Pessoa[] pessoas)
+        public void Cadastrar(ref PessoaAntiga[] pessoas)
         {
-            Pessoa pessoaCadastro = new Pessoa();
+            Console.WriteLine("\n*Cadastrar*");
+            PessoaAntiga pessoaCadastro = new PessoaAntiga();
             int arrayCheio = -1;
             bool sairMetodo = false;
 
             pessoaCadastro.ID = PosicaoInsercaoNoArray(pessoas);
-            if(pessoaCadastro.ID == arrayCheio)
+            if (pessoaCadastro.ID == arrayCheio)
             {
                 Console.WriteLine("Base de dados está cheia, contate o administrador do sistema");
                 return;
@@ -49,26 +48,26 @@ namespace ClubeDaLeitura.ConsoleApp
                 return;
             }
 
-            pessoaCadastro.posicaoPreenchida = true;
             pessoas[pessoaCadastro.ID] = pessoaCadastro;
 
             Console.Clear();
             Console.WriteLine("Cadastro realizado com sucesso!");
         }
-        public void Listar(Pessoa[] pessoas)
+        public void Listar(PessoaAntiga[] pessoas)
         {
+            Console.WriteLine("\n*Listar*");
             ImprimirPessoas(pessoas);
             Console.Write("\nPressine enter para voltar ao menu.");
             Console.ReadKey();
             Console.Clear();
         }
-        public void Editar(Pessoa[] pessoas)
+        public void Editar(PessoaAntiga[] pessoas)
         {
-            Pessoa pessoaEdicao = new Pessoa();
-            int arrayCheio = -1;
+            PessoaAntiga pessoaEdicao = new PessoaAntiga();
             bool sairMetodo = false;
 
-            Console.WriteLine("\nListagem de Amigos cadastrados.");
+            Console.WriteLine("\n*Editar*");
+            Console.WriteLine("Listagem de Amigos cadastrados.");
             ImprimirPessoas(pessoas);
             Console.Write("\nPressione enter para sair ou informe o ID do amigo que deseja alterar: ");
             string lerDados = Console.ReadLine();
@@ -77,7 +76,7 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
                 return;
             }
-                
+
             bool conversaoRealizada = int.TryParse(lerDados, out int idEdicao);
             if (conversaoRealizada == true && (ExisteNoArray(pessoas, idEdicao) == true))
             {
@@ -86,7 +85,7 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Write("Pessoa em Edição | ");
                 ImprimirPessoa(pessoas, pessoaEdicao.ID);
                 InputDados(ref pessoaEdicao, ref sairMetodo, true);
-                
+
                 pessoaEdicao.nome = pessoaEdicao.nome == "" ? pessoas[pessoaEdicao.ID].nome : pessoaEdicao.nome;
                 pessoaEdicao.nomeResponsavel = pessoaEdicao.nomeResponsavel == "" ? pessoas[pessoaEdicao.ID].nomeResponsavel : pessoaEdicao.nomeResponsavel;
                 pessoaEdicao.telefone = pessoaEdicao.telefone == "" ? pessoas[pessoaEdicao.ID].telefone : pessoaEdicao.telefone;
@@ -104,23 +103,28 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
             }
         }
-        public void Excluir(Pessoa[] pessoas)
+        public void Excluir(PessoaAntiga[] pessoas)
         {
-            Console.WriteLine("\nListagem de Amigos cadastrados.");
+            Console.WriteLine("\n*Excluir*");
+            Console.WriteLine("Listagem de Amigos cadastrados.");
             ImprimirPessoas(pessoas);
-            Console.Write("\nInforme o ID que deseja excluir: ");
+            Console.Write("\nPressione enter para voltar ou informe o ID que deseja excluir: ");
             string lerDados = Console.ReadLine();
             bool conversaoRealizada = int.TryParse(lerDados, out int id);
             if (conversaoRealizada == true && ExisteNoArray(pessoas, id) == true)
             {
-                Pessoa pessoaExcluir = new Pessoa(default, "", "", "", "", false);
-                pessoas[id] = pessoaExcluir;
+                pessoas[id] = null;
                 Console.Clear();
                 Console.WriteLine("Usuário excluído com sucesso!");
             }
+            else if (lerDados == "")
+            {
+                Console.Clear();
+                return;
+            }
             else
             {
-                Console.WriteLine("Nenhum usuário excluído!");
+                Console.WriteLine("Nenhum usuário excluído.");
                 Console.ReadKey();
                 Console.Clear();
             }
@@ -128,23 +132,23 @@ namespace ClubeDaLeitura.ConsoleApp
         #endregion
 
         #region Métodos auxiliares
-        public static void ImprimirPessoas(Pessoa[] pessoas)
+        public static void ImprimirPessoas(PessoaAntiga[] pessoas)
         {
             foreach (var p in pessoas)
             {
-                if (p != null && p.nome != "")
+                if (p != null)
                     Console.WriteLine($"ID: {p.ID} | Nome: {p.nome} | Responsável: {p.nomeResponsavel} | Telefone: {p.telefone} | Endereço: {p.endereco}");
             }
         }
-        private void ImprimirPessoa(Pessoa[] pessoas, int id)
+        private void ImprimirPessoa(PessoaAntiga[] pessoas, int id)
         {
             Console.WriteLine($"ID: {pessoas[id].ID} | Nome: {pessoas[id].nome} | Responsável: {pessoas[id].nomeResponsavel} | Telefone: {pessoas[id].telefone} | Endereço: {pessoas[id].endereco}");
         }
-        private static void InputDados(ref Pessoa pessoaCadastroEdicao, ref bool sairMetodo, bool edicaoPessoa)
+        private static void InputDados(ref PessoaAntiga pessoaCadastroEdicao, ref bool sairMetodo, bool edicaoPessoa)
         {
             Console.Write("Informe o nome: ");
             pessoaCadastroEdicao.nome = Console.ReadLine();
-            if(pessoaCadastroEdicao.nome == "" && edicaoPessoa == false)
+            if (pessoaCadastroEdicao.nome == "" && edicaoPessoa == false)
             {
                 sairMetodo = true;
                 return;
@@ -171,13 +175,13 @@ namespace ClubeDaLeitura.ConsoleApp
                 return;
             }
         }
-        private int PosicaoInsercaoNoArray(Pessoa[] pessoas)
+        private int PosicaoInsercaoNoArray(PessoaAntiga[] pessoas)
         {
             int posicao = -1;// -1 em caso de array cheio
 
             for (int i = 0; i < pessoas.Length; i++)
             {
-                if (pessoas[i] == null || pessoas[i].posicaoPreenchida == false)
+                if (pessoas[i] == null)
                 {
                     posicao = i;
                     break;
@@ -186,19 +190,19 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return posicao;
         }
-        public static bool ExisteNoArray(Pessoa[] pessoas, int id)
+        public static bool ExisteNoArray(PessoaAntiga[] pessoas, int id)
         {
             bool existeNoArray = false;
 
-            if (pessoas[id] != null && pessoas[id].posicaoPreenchida == true)
+            if (pessoas[id] != null)
                 existeNoArray = true;
-            
+
             return existeNoArray;
         }
-        public static void PopularPessoas(ref Pessoa[] pessoas)
+        public static void PopularPessoas(ref PessoaAntiga[] pessoas)
         {
-            Pessoa p1 = new Pessoa(0, "Marcos", "Adriana", "123", "rua 1", true);
-            Pessoa p2 = new Pessoa(1, "Patricia", "Andreia", "321", "rua 2", true);
+            PessoaAntiga p1 = new PessoaAntiga(0, "Marcos", "Adriana", "123", "rua 1");
+            PessoaAntiga p2 = new PessoaAntiga(1, "Patricia", "Andreia", "321", "rua 2");
             pessoas[0] = p1;
             pessoas[1] = p2;
         }

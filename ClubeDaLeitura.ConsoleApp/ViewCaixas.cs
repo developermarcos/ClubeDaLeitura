@@ -6,57 +6,91 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ConsoleApp
 {
-    public enum Caixas
+    internal class ViewCaixas
     {
-        Listar = 1,
-        Cadastrar = 2,
-        Editar = 3,
-        Excluir = 4
-    }
-    internal class Caixa
-    {
-        public string etiqueta, numero, cor;
-        public int caixaId;
-        bool posicaoPreenchida;
-
-        public Caixa() { }
-        public Caixa(int id, string cor, string etiqueta, string numero, bool posicaoPreenchida)
+        ClassCaixa[] caixas;
+        public ViewCaixas(ref ClassCaixa[] c)
         {
-            this.caixaId = id;
-            this.cor = cor;
-            this.etiqueta = etiqueta;
-            this.numero = numero;
-            this.posicaoPreenchida = posicaoPreenchida;
+            caixas = c;
         }
-        public void Listar(Caixa[] caixas)
+        public void Menu()
         {
-            Console.WriteLine("\nListar caixas");
-            ImprimirCaixas(caixas);
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("----------------------------Caixas----------------------------");
+            Console.ResetColor();
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.Write($"|| (1) Listar |");
+            Console.Write($"| (2) Cadastrar |");
+            Console.Write($"| (3) Editar |");
+            Console.Write($"| (4) Excluir ||");
+            Console.WriteLine("\n--------------------------------------------------------------");
+            Console.Write("Informe a opção desejada: ");
+            string lerTela = Console.ReadLine();
+            if (lerTela == "")
+            {
+                Console.Clear();
+                return;
+            }
+            bool conversaoRealizada = int.TryParse(lerTela, out int opcao);
+            if (conversaoRealizada == true)
+            {
+                switch (opcao)
+                {
+                    case 1:
+                        Listar();
+                        break;
+                    case 2:
+                        Cadastrar();
+                        break;
+                    case 3:
+                        Editar();
+                        break;
+                    case 4:
+                        Excluir();
+                        break;
+                    default:
+                        Error.Mensagem();
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                }
+            }
+            else
+            {
+                Error.Mensagem();
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+        public void Listar()
+        {
+            Console.WriteLine("\n*Listar*");
+            PrintAll();
             Console.WriteLine("Pressione enter para voltar ao menu.");
             Console.ReadKey();
             Console.Clear();
         }
-        public void Cadastrar(ref Caixa[] caixas)
+        public void Cadastrar()
         {
-            Caixa caixaCadastro = new Caixa();
+            ClassCaixa caixaCadastro = new ClassCaixa();
             bool sairMetodo = false;
             int arrayCheio = -1;
 
-            Console.WriteLine("\nCadastrar caixa");
+            Console.WriteLine("\n*Cadastrar*");
 
-            caixaCadastro.caixaId = PosicaoInserirArray(caixas);
+            caixaCadastro.caixaId = PositionToInsert();
 
-            if(caixaCadastro.caixaId != arrayCheio)
+            if (caixaCadastro.caixaId != arrayCheio)
             {
                 Console.WriteLine("Pressione enter para sair do cadastro ou informe o campo solicitado.");
-                InputDadosMelhorado(ref caixaCadastro, ref caixas, ref sairMetodo, false);
+                DataInput(ref caixaCadastro, ref sairMetodo, false);
                 if (sairMetodo == true)
                 {
                     Console.Clear();
                     return;
                 }
-                    
-                caixaCadastro.posicaoPreenchida = true;
+
                 caixas[caixaCadastro.caixaId] = caixaCadastro;
 
                 Console.Clear();
@@ -69,22 +103,22 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
             }
         }
-        public void Editar(Caixa[] caixas)
+        public void Editar()
         {
-            Caixa caixaCadastro = new Caixa();
+            ClassCaixa caixaCadastro = new ClassCaixa();
             bool sairMetodo = false;
             int arrayCheio = -1;
 
-            Console.WriteLine("Editar caixas");
-            Console.WriteLine("\nSegue listagem de caixas cadastradas");
-            ImprimirCaixas(caixas);
+            Console.WriteLine("\n*Editar*");
+            Console.WriteLine("Segue listagem de caixas cadastradas");
+            PrintAll();
             while (true)
             {
                 Console.Write("Pressione enter para sair ou informe o ID da caixa que deseja editar: ");
                 string lerTela = Console.ReadLine();
 
                 bool conversaoRealizada = int.TryParse(lerTela, out int idEditar);
-                if (conversaoRealizada == true && ExisteNoArray(caixas, idEditar) == true)
+                if (conversaoRealizada == true && PositionNotNull(idEditar) == true)
                 {
                     caixaCadastro.caixaId = idEditar;
                     break;
@@ -105,36 +139,31 @@ namespace ClubeDaLeitura.ConsoleApp
 
             Console.WriteLine("\nPressione enter para manter a informação ou informe a alteração.");
             Console.Write("Caixa em Edição | ");
-            ImprimirCaixa(caixas, caixaCadastro.caixaId);
+            caixas[caixaCadastro.caixaId].Print();
             
-            InputDadosMelhorado(ref caixaCadastro, ref caixas, ref sairMetodo, true);
+            DataInput(ref caixaCadastro, ref sairMetodo, true);
 
             caixaCadastro.cor = caixaCadastro.cor == "" ? caixas[caixaCadastro.caixaId].cor : caixaCadastro.cor;
             caixaCadastro.etiqueta = caixaCadastro.etiqueta == "" ? caixas[caixaCadastro.caixaId].etiqueta : caixaCadastro.etiqueta;
             caixaCadastro.numero = caixaCadastro.numero == "" ? caixas[caixaCadastro.caixaId].numero : caixaCadastro.numero;
-            caixaCadastro.posicaoPreenchida = true;
 
             caixas[caixaCadastro.caixaId] = caixaCadastro;
 
             Console.Clear();
             Console.WriteLine("Caixa editada com sucesso!");
-            
+
         }
-        public void Excluir(Caixa[] caixas)
+        public void Excluir()
         {
-            Console.WriteLine("Excluir caixas");
-            Console.WriteLine("\nSegue listagem de caixas cadastradas");
-            ImprimirCaixas(caixas);
+            Console.WriteLine("\n*Excluir*");
+            Console.WriteLine("Segue listagem de caixas cadastradas");
+            PrintAll();
             Console.Write("Informe o ID da caixa que deseja editar: ");
             string lerTela = Console.ReadLine();
             bool conversaoRealizada = int.TryParse(lerTela, out int idExcluir);
-            if (conversaoRealizada == true && ExisteNoArray(caixas, idExcluir) == true)
+            if (conversaoRealizada == true && PositionNotNull(idExcluir) == true)
             {
-                caixas[idExcluir].caixaId = default;
-                caixas[idExcluir].etiqueta = "";
-                caixas[idExcluir].cor = default;
-                caixas[idExcluir].numero = default;
-                caixas[idExcluir].posicaoPreenchida = false;
+                caixas[idExcluir] = null;
                 Console.Clear();
                 Console.WriteLine("Caixa excluída com sucesso!");
             }
@@ -147,19 +176,15 @@ namespace ClubeDaLeitura.ConsoleApp
         }
 
         #region Métodos auxiliares
-        public static void ImprimirCaixas(Caixa[] caixas)
+        public void PrintAll()
         {
             foreach (var caixa in caixas)
             {
-                if (caixa != null && caixa.posicaoPreenchida == true)
-                    Console.WriteLine($"ID: {caixa.caixaId} | Etiqueta: {caixa.etiqueta} | Cor: {caixa.cor} | Numero: {caixa.numero}");
+                if (caixa != null)
+                    caixa.Print();
             }
         }
-        private static void ImprimirCaixa(Caixa[] caixas, int id)
-        {
-            Console.WriteLine($"ID: {caixas[id].caixaId} | Etiqueta: {caixas[id].etiqueta} | Cor: {caixas[id].cor} | Numero: {caixas[id].numero}");
-        }
-        private static void InputDadosMelhorado(ref Caixa caixaCadastro, ref Caixa[] caixas, ref bool sairMetodo, bool ehEdicao)
+        private void DataInput(ref ClassCaixa caixaCadastro, ref bool sairMetodo, bool ehEdicao)
         {
             Console.Write("Informe a etiqueta da caixa: ");
             caixaCadastro.etiqueta = Console.ReadLine();
@@ -183,13 +208,13 @@ namespace ClubeDaLeitura.ConsoleApp
                 return;
             }
         }
-        private static int PosicaoInserirArray(Caixa[] caixas)
+        private int PositionToInsert()
         {
             int posicao = -1;//Em caso de array cheio retorno -1
 
             for (int i = 0; i < caixas.Length; i++)
             {
-                if(caixas[i] == null || caixas[i].posicaoPreenchida == false)
+                if (caixas[i] == null)
                 {
                     posicao = i;
                     break;
@@ -198,30 +223,22 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return posicao;
         }
-        public static bool ExisteNoArray(Caixa[] caixas, int id)
+        public bool PositionNotNull(int id)
         {
             bool existe = false;
 
-            if (caixas[id] != null && caixas[id].posicaoPreenchida == true)
+            if (caixas[id] != null)
                 existe = true;
-            
+
 
             return existe;
         }
-        public static void PopularCaixas(Caixa[] caixas)
+        public static void PopularCaixas(ClassCaixa[] caixas)
         {
-            Caixa c1 = new Caixa(0, "Preta", "Edição especial", "123", true);
-            Caixa c2 = new Caixa(1, "Branca", "Doação", "321", true);
+            ClassCaixa c1 = new ClassCaixa(0, "Preta", "Edição especial", "123");
+            ClassCaixa c2 = new ClassCaixa(1, "Branca", "Doação", "321");
             caixas[0] = c1;
             caixas[1] = c2;
-        }
-        #endregion
-
-        #region métodos auxiliares classes externas
-        public void ImprimeCaixaEmRevista()
-        {
-            if (this != null && this.etiqueta != "")
-                Console.WriteLine($"ID: {this.caixaId} | Etiqueta: {this.etiqueta} | Cor: {this.cor} | Numero: {this.numero}");
         }
         #endregion
     }

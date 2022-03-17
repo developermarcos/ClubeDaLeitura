@@ -6,89 +6,138 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ConsoleApp
 {
-    public enum Emprestimos
+    internal class ViewEmprestimos
     {
-        Listar =1,
-        Cadastrar = 2,
-        Editar = 3,
-        Excluir = 4,
-        Fechar = 5,
-        Mensal = 6,
-        Abertos = 7,
-        Diario = 8
-    }
-    internal class Emprestimo
-    {
-        int ID;
-        int idAmigo;
-        int idRevista;
-        DateTime dataEmprestimo;
-        DateTime dataDevolucao;
-        bool emprestimoAberto;
-        bool posicaoPreenchida;
-        public Emprestimo() { }
-        public Emprestimo(int id, int idAmigo, int idRevista, DateTime dataEmprestimo, DateTime dataDevolucao, bool emprestimoAberto, bool posicaoPreenchida)
+        ClassCaixa[] caixas;
+        ClassPessoa[] pessoas;
+        ClassRevista[] revistas;
+        ClassEmprestimo[] emprestimos;
+        public ViewEmprestimos(ref ClassCaixa[] c, ref ClassPessoa[] p, ref ClassRevista[] r, ref ClassEmprestimo[] e)
         {
-            this.ID = id;
-            this.idAmigo = idAmigo;
-            this.idRevista = idRevista;
-            this.dataEmprestimo = dataEmprestimo;
-            this.dataDevolucao = dataDevolucao;
-            this.emprestimoAberto = emprestimoAberto;
-            this.posicaoPreenchida = posicaoPreenchida;
+            caixas = c;
+            pessoas = p;
+            revistas = r;
+            emprestimos = e;
         }
-        public void Listar(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas, Caixa[] caixas)
+        public void Menu()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("------------------------------------------------------Emprestimos------------------------------------------------------");
+            Console.ResetColor();
+            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------------");
+            Console.Write($"|| (1) Listar |");
+            Console.Write($"| (2) Cadastrar  |");
+            Console.Write($"| (3) Editar  |");
+            Console.Write($"| (4) Excluir  |");
+            Console.Write($"| (5) Fechar  |");
+            Console.Write($"| (6) Mensal  |");
+            Console.Write($"| (7) Abertos  |");
+            Console.Write($"| (8) Diario ||");
+            Console.WriteLine("\n-----------------------------------------------------------------------------------------------------------------------");
+            Console.Write("Informe a opção desejada: ");
+            string lerTela = Console.ReadLine();
+            if (lerTela == "")
+            {
+                Console.Clear();
+                return;
+            }
+            bool conversaoRealizada = int.TryParse(lerTela, out int opcao);
+            if (conversaoRealizada == true)
+            {
+                switch (opcao)
+                {
+                    case 1:
+                        Listar();
+                        break;
+                    case 2:
+                        Cadastrar();
+                        break;
+                    case 3:
+                        Editar();
+                        break;
+                    case 4:
+                        Excluir();
+                        break;
+                    case 5:
+                        Fechar();
+                        break;
+                    case 6:
+                        Mensal();
+                        break;
+                    case 7:
+                        Abertos();
+                        break;
+                    case 8:
+                        Diario();
+                        break;
+                    default:
+                        Error.Mensagem();
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                }
+            }
+            else
+            {
+                Error.Mensagem();
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+        #region Métodos principais
+        public void Listar()
         {
             Console.WriteLine("\n *Listagem*");
-            ImprimeEmprestimos(emprestimos, amigos, revistas);
+            PrintAll();
 
             Console.WriteLine("Tecle enter para voltar ao menu.");
             Console.ReadKey();
             Console.Clear();
         }
-        public void Cadastrar(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas, Caixa[] caixas)
+        public void Cadastrar()
         {
             bool sairMetodo = false;
-            Emprestimo emprestimoCadastro = new Emprestimo();
+            ClassEmprestimo emprestimoCadastro = new ClassEmprestimo();
 
             Console.WriteLine("\n *Cadastro*");
 
             Console.WriteLine("\nListagem de amigos");
-            Pessoa.ImprimirPessoas(amigos);
-            if ((emprestimoCadastro.ID = PosicaoParaCadastro(emprestimos)) == -1)
+            ViewPessoas viewPessoa = new ViewPessoas(ref pessoas);
+            viewPessoa.PrintAll();
+            if ((emprestimoCadastro.ID = PositionToInsert()) == -1)
             {
                 Console.WriteLine("Base de dados está cheia, contate o administrador");
                 return;
             }
 
-            inputDados(ref sairMetodo, ref emprestimoCadastro, ref emprestimos, ref revistas, ref amigos, ref caixas, false);
-            
+            DataInput(ref sairMetodo, ref emprestimoCadastro, false);
+
             if (sairMetodo == true)
                 return;
 
             emprestimoCadastro.emprestimoAberto = true;
-            emprestimoCadastro.posicaoPreenchida = true;
             emprestimos[emprestimoCadastro.ID] = emprestimoCadastro;
 
             Console.Clear();
             Console.WriteLine("Cadastro realizado com sucesso!");
         }
-        public void Editar(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas, Caixa[] caixas)
+        public void Editar()
         {
             bool sairMetodo = false;
-            Emprestimo emprestimoEdicao = new Emprestimo();
+            ClassEmprestimo emprestimoEdicao = new ClassEmprestimo();
 
             Console.WriteLine("\n *Edição*");
             Console.WriteLine("Listagem de Emprestimos cadastrados");
-            ImprimeEmprestimos(emprestimos, amigos, revistas);
+            PrintAll();
 
             while (true)
             {
                 Console.Write("Pressione enter para voltar ao menu ou informe o ID que deseja alterar: ");
                 string lerTela = Console.ReadLine();
-                
+
                 bool conversaoRealizada = int.TryParse(lerTela, out int idEdicao);
-                if (conversaoRealizada == true && ExisteNoArray(emprestimos, idEdicao) == true)
+                if (conversaoRealizada == true && PositionNotNull(idEdicao) == true)
                 {
                     emprestimoEdicao.ID = idEdicao;
                     break;
@@ -106,35 +155,34 @@ namespace ClubeDaLeitura.ConsoleApp
                 return;
 
             Console.WriteLine("\nPressione enter para manter a informação anterior ou informe o novo atributo");
-            
-            Pessoa.ImprimirPessoas(amigos);
-            inputDados(ref sairMetodo, ref emprestimoEdicao, ref emprestimos, ref revistas, ref amigos, ref caixas, true);
 
-            emprestimoEdicao.posicaoPreenchida = true;
+            ViewPessoas viewPessoas = new ViewPessoas(ref pessoas);
+            viewPessoas.PrintAll();
+            DataInput(ref sairMetodo, ref emprestimoEdicao, true);
+
             emprestimoEdicao.emprestimoAberto = true;
             emprestimos[emprestimoEdicao.ID] = emprestimoEdicao;
 
             Console.Clear();
             Console.WriteLine("Cadastro realizado com sucesso!");
         }
-        public void Excluir(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas, Caixa[] caixas)
+        public void Excluir()
         {
             bool sairMetodo = false;
-            Emprestimo emprestimoExclusao = new Emprestimo();
 
             Console.WriteLine("\n *Exclusão*");
             Console.WriteLine("Listagem de Emprestimos cadastrados");
-            ImprimeEmprestimos(emprestimos, amigos, revistas);
+            PrintAll();
 
             while (true)
             {
-                Console.Write("Pressione enter para voltar ao menu ou informe o ID que deseja alterar: ");
+                Console.Write("Pressione enter para voltar ao menu ou informe o ID que deseja excluir: ");
                 string lerTela = Console.ReadLine();
 
                 bool conversaoRealizada = int.TryParse(lerTela, out int idEdicao);
-                if (conversaoRealizada == true && ExisteNoArray(emprestimos, idEdicao) == true)
+                if (conversaoRealizada == true && PositionNotNull(idEdicao) == true)
                 {
-                    emprestimoExclusao.ID = idEdicao;
+                    emprestimos[idEdicao] = null;
                     break;
                 }
                 else if (lerTela == "")
@@ -148,37 +196,29 @@ namespace ClubeDaLeitura.ConsoleApp
             }
             if (sairMetodo == true)
                 return;
-
-            
-            emprestimoExclusao.idAmigo = default;
-            emprestimoExclusao.idRevista = default;
-            emprestimoExclusao.dataEmprestimo = default;
-            emprestimoExclusao.dataDevolucao = default;
-            emprestimoExclusao.emprestimoAberto = false;
-            emprestimoExclusao.posicaoPreenchida = false;
-            emprestimos[emprestimoExclusao.ID] = emprestimoExclusao;
 
             Console.Clear();
             Console.WriteLine("Empréstimo excluído com sucesso!");
         }
-        public void Fechar(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas, Caixa[] caixas)
+        public void Fechar()
         {
             bool sairMetodo = false;
-            Emprestimo emprestimoExclusao = new Emprestimo();
+            ClassEmprestimo emprestimoExclusao = new ClassEmprestimo();
 
             Console.WriteLine("\n *Encerrar empréstimo*");
             Console.WriteLine("Listagem de Emprestimos cadastrados");
-            ImprimeEmprestimos(emprestimos, amigos, revistas);
+            PrintAll();
 
             while (true)
             {
-                Console.Write("Pressione enter para voltar ao menu ou informe o ID que deseja finalizar o empréstimo: ");
+                Console.Write("Pressione enter para voltar ao menu ou informe o ID que deseja fechar o empréstimo: ");
                 string lerTela = Console.ReadLine();
 
                 bool conversaoRealizada = int.TryParse(lerTela, out int idEdicao);
-                if (conversaoRealizada == true && ExisteNoArray(emprestimos, idEdicao) == true)
+                if (conversaoRealizada == true && PositionNotNull(idEdicao) == true)
                 {
                     emprestimoExclusao.ID = idEdicao;
+                    emprestimos[idEdicao].emprestimoAberto = false;
                     break;
                 }
                 else if (lerTela == "")
@@ -193,66 +233,64 @@ namespace ClubeDaLeitura.ConsoleApp
             if (sairMetodo == true)
                 return;
 
-
-            emprestimos[emprestimoExclusao.ID].emprestimoAberto = false; ;
-
             Console.Clear();
             Console.WriteLine("Empréstimo encerrado com sucesso!");
         }
-        public void Diario(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas, Caixa[] caixas)
+        public void Diario()
         {
             Console.WriteLine("\n *Empréstimos hoje*");
             for (int i = 0; i < emprestimos.Length; i++)
             {
-                if (emprestimos[i] != null && emprestimos[i].posicaoPreenchida == true)
+                if (emprestimos[i] != null)
                 {
-                    if(DateTime.Now.ToString("dd/MM/yyyy") == emprestimos[i].dataEmprestimo.ToString("dd/MM/yyyy"))
-                        Console.WriteLine($"-ID: {emprestimos[i].ID} | Amigo: {amigos[emprestimos[i].idAmigo].nome} | Revista edição: {revistas[emprestimos[i].idRevista].numeroEdicao} | Data emprestimo: {emprestimos[i].dataEmprestimo.ToString("dd/MM/yyyy")} | Data devolução: {emprestimos[i].dataDevolucao.ToString("dd/MM/yyyy")} ");
+                    if (DateTime.Now.ToString("dd/MM/yyyy") == emprestimos[i].dataEmprestimo.ToString("dd/MM/yyyy"))
+                        emprestimos[i].Print(pessoas[emprestimos[i].idAmigo], revistas[emprestimos[i].idRevista]);
                 }
             }
             Console.WriteLine("Tecle enter para voltar ao menu.");
             Console.ReadKey();
             Console.Clear();
         }
-        public void Mensal(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas, Caixa[] caixas)
+        public void Mensal()
         {
             Console.WriteLine("\n *Empréstimos Mensal*");
             for (int i = 0; i < emprestimos.Length; i++)
             {
-                if (emprestimos[i] != null && emprestimos[i].posicaoPreenchida == true)
+                if (emprestimos[i] != null)
                 {
                     if (DateTime.Now.ToString("MM") == emprestimos[i].dataEmprestimo.ToString("MM"))
-                        Console.WriteLine($"-ID: {emprestimos[i].ID} | Amigo: {amigos[emprestimos[i].idAmigo].nome} | Revista edição: {revistas[emprestimos[i].idRevista].numeroEdicao} | Data emprestimo: {emprestimos[i].dataEmprestimo.ToString("dd/MM/yyyy")} | Data devolução: {emprestimos[i].dataDevolucao.ToString("dd/MM/yyyy")} ");
+                        emprestimos[i].Print(pessoas[emprestimos[i].idAmigo], revistas[emprestimos[i].idRevista]);
                 }
             }
             Console.WriteLine("Tecle enter para voltar ao menu.");
             Console.ReadKey();
             Console.Clear();
         }
-        public void Abertos(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas, Caixa[] caixas)
+        public void Abertos()
         {
             Console.WriteLine("\n *Empréstimos em aberto*");
             for (int i = 0; i < emprestimos.Length; i++)
             {
-                if (emprestimos[i] != null && emprestimos[i].posicaoPreenchida == true && emprestimos[i].emprestimoAberto == true)
+                if (emprestimos[i] != null && emprestimos[i].emprestimoAberto == true)
                 {
-                    Console.WriteLine($"-ID: {emprestimos[i].ID} | Amigo: {amigos[emprestimos[i].idAmigo].nome} | Revista edição: {revistas[emprestimos[i].idRevista].numeroEdicao} | Data emprestimo: {emprestimos[i].dataEmprestimo.ToString("dd/MM/yyyy")} | Data devolução: {emprestimos[i].dataDevolucao.ToString("dd/MM/yyyy")} ");
+                    emprestimos[i].Print(pessoas[emprestimos[i].idAmigo], revistas[emprestimos[i].idRevista]);
                 }
             }
             Console.WriteLine("Tecle enter para voltar ao menu.");
             Console.ReadKey();
             Console.Clear();
         }
-        
+        #endregion
         #region Métodos auxiliares
-        private void inputDados(ref bool sairMetodo, ref Emprestimo emprestimoCadastro, ref Emprestimo[] emprestimos, ref Revista[] revistas, ref Pessoa[] amigos, ref Caixa[] caixas, bool ehEdicao)
+        private void DataInput(ref bool sairMetodo, ref ClassEmprestimo emprestimoCadastro, bool ehEdicao)
         {
             while (true)
             {
                 Console.Write("Para sair pressione enter ou informe o ID do amigo: ");
                 string lerTela = Console.ReadLine();
                 bool conversaoRealizada = int.TryParse(lerTela, out int idCadastro);
-                if (conversaoRealizada == true && Pessoa.ExisteNoArray(amigos, idCadastro))
+                ViewPessoas viewPessoa = new ViewPessoas(ref pessoas);
+                if (conversaoRealizada == true && viewPessoa.PosicaoNotNull(idCadastro) == true)
                 {
                     emprestimoCadastro.idAmigo = idCadastro;
                     break;
@@ -272,13 +310,14 @@ namespace ClubeDaLeitura.ConsoleApp
             }
 
             Console.WriteLine("\nListagem de revistas");
-            Revista.ImpimirRevistas(revistas, caixas);
+            ViewRevistas viewRevistas = new ViewRevistas(ref revistas, ref caixas);
+            viewRevistas.PrintAll();
             while (true)
             {
                 Console.Write("Para sair pressione enter ou informe o ID da revista: ");
                 string lerTela = Console.ReadLine();
                 bool conversaoRealizada = int.TryParse(lerTela, out int idCadastro);
-                if (conversaoRealizada == true && Revista.ExisteNoArray(revistas, idCadastro))
+                if (conversaoRealizada == true && PositionNotNull(idCadastro))
                 {
                     emprestimoCadastro.idRevista = idCadastro;
                     break;
@@ -347,13 +386,13 @@ namespace ClubeDaLeitura.ConsoleApp
                 return;
             }
         }
-        public static int PosicaoParaCadastro(Emprestimo[] emprestimos)
+        public int PositionToInsert()
         {
             int idParaCadastro = -1;//Em caso de array cheio retorna -1
 
             for (int i = 0; i < emprestimos.Length; i++)
             {
-                if(emprestimos[i] == null || emprestimos[i].posicaoPreenchida == false)
+                if (emprestimos[i] == null)
                 {
                     idParaCadastro = i;
                     break;
@@ -362,34 +401,34 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return idParaCadastro;
         }
-        private static void ImprimeEmprestimos(Emprestimo[] emprestimos, Pessoa[] amigos, Revista[] revistas)
+        private void PrintAll()
         {
             for (int i = 0; i < emprestimos.Length; i++)
             {
-                if (emprestimos[i] != null && emprestimos[i].posicaoPreenchida == true)
+                if (emprestimos[i] != null)
                 {
-                    Console.WriteLine($"-ID: {emprestimos[i].ID} | Amigo: {amigos[emprestimos[i].idAmigo].nome} | Revista edição: {revistas[emprestimos[i].idRevista].numeroEdicao} | Data emprestimo: {emprestimos[i].dataEmprestimo.ToString("dd/MM/yyyy")} | Data devolução: {emprestimos[i].dataDevolucao.ToString("dd/MM/yyyy")} ");
+                    emprestimos[i].Print(pessoas[emprestimos[i].idAmigo], revistas[emprestimos[i].idRevista]);
                 }
             }
         }
-        private static bool ExisteNoArray(Emprestimo[] emprestimos, int idEdicao)
+        private bool PositionNotNull(int idEdicao)
         {
             bool existe = false;
 
-            if (emprestimos[idEdicao] != null && emprestimos[idEdicao].posicaoPreenchida == true)
+            if (emprestimos[idEdicao] != null)
                 existe = true;
 
             return existe;
         }
-        public static void PopularArray(Emprestimo[] emprestimos)
+        public static void PopularArray(ClassEmprestimo[] emprestimos)
         {
             //int idAmigo, int idRevista, DateTime dataEmprestimo, DateTime dataDevolucao, bool posicaoPreenchida)
             DateTime data1 = new DateTime(2022, 03, 10);
             DateTime data2 = new DateTime(2022, 03, 20);
             DateTime data3 = new DateTime(2022, 03, 16);
-            Emprestimo emp1 = new Emprestimo(0, 0, 0, data1, data2, true, true);
-            Emprestimo emp2 = new Emprestimo(1, 1, 1, data1, data2, true, true);
-            Emprestimo emp3 = new Emprestimo(2, 0, 1, data3, data3, true, true);
+            ClassEmprestimo emp1 = new ClassEmprestimo(0, 0, 0, data1, data2, true);
+            ClassEmprestimo emp2 = new ClassEmprestimo(1, 1, 1, data1, data2, true);
+            ClassEmprestimo emp3 = new ClassEmprestimo(2, 0, 1, data3, data3, true);
             emprestimos[0] = emp1;
             emprestimos[1] = emp2;
             emprestimos[2] = emp3;

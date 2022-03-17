@@ -6,51 +6,85 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ConsoleApp
 {
-    public enum Revistas
+    internal class ViewRevistas
     {
-        Listar = 1,
-        Cadastrar = 2,
-        Editar = 3,
-        Excluir = 4
-    }
-    
-    internal class Revista
-    {
-        public int revistaId, revistaCaixaId;
-        public string numeroEdicao;
-        public DateTime anoRevista;
-        public string tipoColecao;
-        public bool posicaoPreenchida;
-        public Revista() { }
-        public Revista(int revistaId, string numeroEdicao, DateTime anoRevista, string tipoColecao, int revistaCaixaId, bool posicaoPreenchida)
-        {
-            this.revistaId = revistaId;
-            this.numeroEdicao = numeroEdicao;
-            this.anoRevista = anoRevista;
-            this.tipoColecao = tipoColecao;
-            this.revistaCaixaId = revistaCaixaId;
-            this.posicaoPreenchida = posicaoPreenchida;
-        }
+        ClassRevista[] revistas;
+        ClassCaixa[] caixas;
 
-        #region Métodos principais
-        public void Listar(Revista[] revistas, Caixa[] caixas)
+        public ViewRevistas(ref ClassRevista[] r, ref ClassCaixa[] c)
         {
-            Console.WriteLine("\nListas revistas");
-            ImpimirRevistas(revistas, caixas);
+            revistas = r;
+            caixas = c;
+        }
+        public void Menu()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("---------------------------Revistas---------------------------");
+            Console.ResetColor();
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.Write($"|| (1) Listar |");
+            Console.Write($"| (2) Cadastrar |");
+            Console.Write($"| (3) Editar |");
+            Console.Write($"| (4) Excluir ||");
+            Console.WriteLine("\n--------------------------------------------------------------");
+            Console.Write("Informe a opção desejada: ");
+            string lerTela = Console.ReadLine();
+            if (lerTela == "")
+            {
+                Console.Clear();
+                return;
+            }
+            bool conversaoRealizada = int.TryParse(lerTela, out int opcao);
+            if (conversaoRealizada == true)
+            {
+                switch (opcao)
+                {
+                    case (int)Amigos.Listar:
+                        Listar();
+                        break;
+                    case (int)Amigos.Cadastrar:
+                        Cadastrar();
+                        break;
+                    case (int)Amigos.Editar:
+                        Editar();
+                        break;
+                    case (int)Amigos.Excluir:
+                        Excluir();
+                        break;
+                    default:
+                        Error.Mensagem();
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                }
+            }
+            else
+            {
+                Error.Mensagem();
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+        #region Métodos principais
+        public void Listar()
+        {
+            Console.WriteLine("\n*Listar*");
+            PrintAll();
             Console.Write("\nPressione enter para voltar ao menu.");
             Console.ReadKey();
             Console.Clear();
         }
-        public void Cadastrar(Revista[] revistas, Caixa[] caixas)
+        public void Cadastrar()
         {
-            Revista revistaCadastro = new Revista();
-            
-            Console.WriteLine("\nCadastrar revistas");
+            ClassRevista revistaCadastro = new ClassRevista();
 
-            revistaCadastro.revistaId = PosicaoInserirArray(revistas);
+            Console.WriteLine("\n*Cadastrar*");
+
+            revistaCadastro.revistaId = PositionToInsert();
             if (revistaCadastro.revistaId != -1)
             {
-                InputDados(caixas, ref revistaCadastro);
+                DataInput(ref revistaCadastro);
                 revistaCadastro.posicaoPreenchida = true;
                 revistas[revistaCadastro.revistaId] = revistaCadastro;
 
@@ -64,25 +98,25 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
             }
         }
-        public void Editar(ref Revista[] revistas, Caixa[] caixas)
+        public void Editar()
         {
-            Revista revistaEdicao = new Revista();
+            ClassRevista revistaEdicao = new ClassRevista();
 
-            Console.WriteLine("\nCadastrar revistas");
+            Console.WriteLine("\n*Editar*");
 
-            ImpimirRevistas(revistas, caixas);
+            PrintAll();
             while (true)
             {
-                Console.Write("\nPressione enter para voltar ou informe o ID da revista que deseja alterar:");
+                Console.Write("Pressione enter para voltar ou informe o ID da revista que deseja alterar:");
                 string lerTela = Console.ReadLine();
                 if (lerTela == "")
                 {
                     Console.Clear();
                     return;
                 }
-                   
+
                 bool conversaoRealizada = int.TryParse(lerTela, out int idEdicao);
-                if (conversaoRealizada == true && Revista.ExisteNoArray(revistas, idEdicao) == true)
+                if (conversaoRealizada == true && PositionNotNull(idEdicao) == true)
                 {
                     revistaEdicao.revistaId = idEdicao;
                     break;
@@ -91,8 +125,8 @@ namespace ClubeDaLeitura.ConsoleApp
             //revistaId numeroEdicao=V anoRevista=V tipoColecao=V revistaCaixaId=V
             if (revistaEdicao.revistaId != -1 &&  revistaEdicao.revistaId != default)
             {
-                InputDados(caixas, ref revistaEdicao);
-                
+                DataInput(ref revistaEdicao);
+
                 //Insere no array
                 revistas[revistaEdicao.revistaId] = revistaEdicao;
 
@@ -106,13 +140,14 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
             }
         }
-        public void Excluir(Revista[] revistas, Caixa[] caixas)
+        public void Excluir()
         {
-            ImpimirRevistas(revistas, caixas);
+            Console.WriteLine("\n*Excluir*");
+            PrintAll();
             while (true)
             {
                 int idExclusao;
-                Console.Write("\nPressione enter para voltar ou informe o ID da revista que deseja alterar:");
+                Console.Write("Pressione enter para voltar ou informe o ID da revista que deseja alterar:");
                 string lerTela = Console.ReadLine();
                 if (lerTela == "")
                 {
@@ -120,15 +155,9 @@ namespace ClubeDaLeitura.ConsoleApp
                     return;
                 }
                 bool conversaoRealizada = int.TryParse(lerTela, out idExclusao);
-                if (conversaoRealizada == true && Revista.ExisteNoArray(revistas, idExclusao) == true)
+                if (conversaoRealizada == true && PositionNotNull(idExclusao) == true)
                 {
-                    DateTime nullDate;
-                    revistas[idExclusao].revistaId = default;
-                    revistas[idExclusao].numeroEdicao = "";
-                    revistas[idExclusao].anoRevista = default;
-                    revistas[idExclusao].tipoColecao = default;
-                    revistas[idExclusao].revistaCaixaId = default;
-                    revistas[idExclusao].posicaoPreenchida = false;
+                    revistas[idExclusao] = null;
 
                     Console.Clear();
                     Console.WriteLine("Revista excluída com sucesso!");
@@ -139,11 +168,11 @@ namespace ClubeDaLeitura.ConsoleApp
         #endregion
 
         #region Métodos auxiliares
-        private void InputDados(Caixa[] caixas, ref Revista revista)
+        private void DataInput(ref ClassRevista revista)
         {
             Console.Write("Informe o numero de edição da revista: ");
             revista.numeroEdicao = Console.ReadLine();
-            
+
             while (true)//Input + validação Data criacao
             {
                 Console.Write("Informe o data de fabricação da revista (00/00/0000): ");
@@ -154,16 +183,16 @@ namespace ClubeDaLeitura.ConsoleApp
                     revista.anoRevista = dataCriacaoRevista;
                     break;
                 }
-                else if(lerTela == "")
+                else if (lerTela == "")
                 {
                     break;
                 }
                 else
                     Console.WriteLine("Data informada com formato incorreto.");
             }
-            
+
             Console.WriteLine("\nLista de caixas cadastradas");
-            Caixa.ImprimirCaixas(caixas);
+            //Caixa.ImprimirCaixas(caixas);
 
             while (true)//Input + validação caixa para guardar revista
             {
@@ -172,25 +201,25 @@ namespace ClubeDaLeitura.ConsoleApp
                 string lerTela = Console.ReadLine();
                 if (lerTela == "")
                     break;
-                bool conversaoRealizada = int.TryParse(lerTela, out revistaCaixaId);
-                if (conversaoRealizada == true && Caixa.ExisteNoArray(caixas, revistaCaixaId) == true)
-                {
-                    revista.revistaCaixaId = revistaCaixaId;
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("\nCaixa informada não existe");
-                }
+                //bool conversaoRealizada = int.TryParse(lerTela, out revistaCaixaId);
+                //if (conversaoRealizada == true && Caixa.ExisteNoArray(caixas, revistaCaixaId) == true)
+                //{
+                //    revista.revistaCaixaId = revistaCaixaId;
+                //    break;
+                //}
+                //else
+                //{
+                //    Console.WriteLine("\nCaixa informada não existe");
+                //}
             }
         }
-        private int PosicaoInserirArray(Revista[] revistas)
+        private int PositionToInsert()
         {
             int posicao = -1;//Em caso de array lotado, retorno -1
 
             for (int i = 0; i < revistas.Length; i++)
             {
-                if (revistas[i] == null || revistas[i].posicaoPreenchida == false)
+                if (revistas[i] == null)
                 {
                     posicao = i;
                     break;
@@ -199,30 +228,30 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return posicao;
         }
-        public static void ImpimirRevistas(Revista[] revistas, Caixa[] caixas)
+        public void PrintAll()
         {
             foreach (var revista in revistas)
             {
-                if (revista != null && revista.posicaoPreenchida == true)
+                if (revista != null)
                 {
-                    Console.WriteLine($"ID: {revista.revistaId} | Edição: {revista.numeroEdicao} | Ano: {revista.anoRevista.ToString("dd/MM/yyyy")} | Tipo coleção: {revista.tipoColecao} | Caixa: {caixas[revista.revistaCaixaId].etiqueta} - {caixas[revista.revistaCaixaId].cor}");
+                    revista.Print(caixas[revista.revistaCaixaId]);
                 }
             }
         }
-        public static bool ExisteNoArray(Revista[] revistas, int id)
+        public bool PositionNotNull(int id)
         {
             bool existe = false;
 
-            if (revistas[id] != null && revistas[id].posicaoPreenchida == true)
+            if (revistas[id] != null)
                 existe = true;
 
             return existe;
         }
-        public static void PopularArrayRevistas(Revista[] revistas)
+        public static void PopularArrayRevistas(ClassRevista[] revistas)
         {
-            DateTime data = new DateTime(2020, 11,21);
-            Revista rev1 = new Revista(0, "444", data, "Aventura", 0, true);
-            Revista rev2 = new Revista(1, "555", data, "Terror", 1, true);
+            DateTime data = new DateTime(2020, 11, 21);
+            ClassRevista rev1 = new ClassRevista(0, "444", data, "Aventura", 0);
+            ClassRevista rev2 = new ClassRevista(1, "555", data, "Terror", 1);
             revistas[0] = rev1;
             revistas[1] = rev2;
         }

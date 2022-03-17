@@ -2,28 +2,21 @@
 
 namespace ClubeDaLeitura.ConsoleApp
 {
-    public enum Telas
-    {
-        Amigos = 1,
-        Revistas = 2,
-        Caixas = 3,
-        Emprestimos = 4,
-        Sair = 0,
-        Error
-    }
     internal class Program
     {
-        public static Pessoa[] amigos = new Pessoa[100];
-        public static Caixa[] caixas = new Caixa[100];
-        public static Revista[] revistas = new Revista[100];
-        public static Emprestimo[] emprestimos = new Emprestimo[100];
+        public static PessoaAntiga[] amigos = new PessoaAntiga[100];
+        public static ClassPessoa[] pessoas = new ClassPessoa[100];
+        public static ClassCaixa[] caixas = new ClassCaixa[100];
+        public static ClassRevista[] revistas = new ClassRevista[100];
+        public static ClassEmprestimo[] emprestimos = new ClassEmprestimo[100];
         public static bool sairSistema = false;
         static void Main(string[] args)
         {
-            Pessoa.PopularPessoas(ref amigos);
-            Caixa.PopularCaixas(caixas);
-            Revista.PopularArrayRevistas(revistas);
-            Emprestimo.PopularArray(emprestimos);
+            PessoaAntiga.PopularPessoas(ref amigos);
+            ViewCaixas.PopularCaixas(caixas);
+            ViewRevistas.PopularArrayRevistas(revistas);
+            ViewEmprestimos.PopularArray(emprestimos);
+            ViewPessoas.PopularPessoas(ref pessoas);
             while(sairSistema == false)
             {
                 Menu();
@@ -32,10 +25,6 @@ namespace ClubeDaLeitura.ConsoleApp
         }
         public static void Menu()
         {
-            string lerTela;
-            int opcao;
-            bool conversaoRealizada;
-
             Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.BackgroundColor = ConsoleColor.Gray;
             Console.WriteLine(" --------------------------------------------------------------- ");
@@ -45,144 +34,38 @@ namespace ClubeDaLeitura.ConsoleApp
 
             //Console.ForegroundColor = ConsoleColor.Black;
             //Console.BackgroundColor = ConsoleColor.Gray;
-            Console.WriteLine("\n--------------------------Menu Principal-------------------------");
+            Console.WriteLine("\n--------------------------Menu Principal--------------------------");
             Console.ResetColor();
-            Console.WriteLine("-----------------------------------------------------------------");
-            Console.Write($"|| ({Telas.Amigos.GetHashCode()}) {Telas.Amigos} |");
-            Console.Write($"| ({Telas.Revistas.GetHashCode()}) {Telas.Revistas} |");
-            Console.Write($"| ({Telas.Caixas.GetHashCode()}) {Telas.Caixas} |");
-            Console.Write($"| ({Telas.Emprestimos.GetHashCode()}) {Telas.Emprestimos} ||");
-            Console.WriteLine("\n-----------------------------------------------------------------");
+            Console.WriteLine("------------------------------------------------------------------");
+            Console.WriteLine("|| {0,-5} || {1,-5} || {2,-5} || {3,-5} ||", "(1) Pessoas", "(2) Caixas", "(3) Revistas", "(4) Empréstimos");
+            Console.WriteLine("------------------------------------------------------------------");
             Console.Write("Informe a opção desejada: ");
-            lerTela = Console.ReadLine();
+            string lerTela = Console.ReadLine();
             if(lerTela == "")
             {
                 Console.Clear();
                 return;
             }
-            conversaoRealizada = int.TryParse(lerTela, out opcao);
+            bool conversaoRealizada = int.TryParse(lerTela, out int opcao);
             if(conversaoRealizada == true)
             {
                 switch (opcao)
                 {
-                    case (int)Telas.Amigos:
-                        MenuAmigo();
+                    case 1:
+                        ViewPessoas viewPessoa = new ViewPessoas(ref pessoas);
+                        viewPessoa.Menu();
                         break;
-                    case (int)Telas.Revistas:
-                        MenuRevista();
+                    case 2:
+                        ViewCaixas viewCaixa = new ViewCaixas(ref caixas);
+                        viewCaixa.Menu();
                         break;
-                    case (int)Telas.Caixas:
-                        MenuCaixa();
+                    case 3:
+                        ViewRevistas viewRevista = new ViewRevistas(ref revistas, ref caixas);
+                        viewRevista.Menu();
                         break;
-                    case (int)Telas.Emprestimos:
-                        MenuEmprestimo();
-                        break;
-                    default:
-                        Error.Mensagem();
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
-                }
-            }
-            else
-            {
-                Error.Mensagem();
-                Console.ReadKey();
-                Console.Clear();
-            }
-        }
-        public static void MenuAmigo()
-        {
-            string lerTela;
-            int opcao;
-            bool conversaoRealizada;
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("------------------------------Amigos------------------------------");
-            Console.ResetColor();
-            Console.WriteLine("-----------------------------------------------------------------");
-            Console.Write($"|| ({Amigos.Listar.GetHashCode()}) {Amigos.Listar} |");
-            Console.Write($"| ({Amigos.Cadastrar.GetHashCode()}) {Amigos.Cadastrar} |");
-            Console.Write($"| ({Amigos.Editar.GetHashCode()}) {Amigos.Editar} |");
-            Console.Write($"| ({Amigos.Excluir.GetHashCode()}) {Amigos.Excluir} ||");
-            Console.WriteLine("\n-----------------------------------------------------------------");
-            Console.Write("Informe a opção desejada: ");
-            lerTela = Console.ReadLine();
-            if (lerTela == "")
-            {
-                Console.Clear();
-                return;
-            }
-            conversaoRealizada = int.TryParse(lerTela, out opcao);
-            if (conversaoRealizada == true)
-            {
-                Pessoa Amigo = new Pessoa();
-                switch (opcao)
-                {
-                    case (int)Amigos.Listar:
-                        Amigo.Listar(amigos);
-                        break;
-                    case (int)Amigos.Cadastrar:
-                        Amigo.Cadastrar(ref amigos);
-                        break;
-                    case (int)Amigos.Editar:
-                        Amigo.Editar(amigos);
-                        break;
-                    case (int)Amigos.Excluir:
-                        Amigo.Excluir(amigos);
-                        break;
-                    default:
-                        Error.Mensagem();
-                        break;
-                }
-            }
-            else
-            {
-                Error.Mensagem();
-                Console.ReadKey();
-                Console.Clear();
-            }
-
-        }
-        public static void MenuCaixa()
-        {
-            string lerTela;
-            int opcao;
-            bool conversaoRealizada;
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("----------------------------Caixas----------------------------");
-            Console.ResetColor();
-            Console.WriteLine("--------------------------------------------------------------");
-            Console.Write($"|| ({Caixas.Listar.GetHashCode()}) {Caixas.Listar} |");
-            Console.Write($"| ({Caixas.Cadastrar.GetHashCode()}) {Caixas.Cadastrar} |");
-            Console.Write($"| ({Caixas.Editar.GetHashCode()}) {Caixas.Editar} |");
-            Console.Write($"| ({Caixas.Excluir.GetHashCode()}) {Caixas.Excluir} ||");
-            Console.WriteLine("\n--------------------------------------------------------------");
-            Console.Write("Informe a opção desejada: ");
-            lerTela = Console.ReadLine();
-            if (lerTela == "")
-            {
-                Console.Clear();
-                return;
-            }
-            conversaoRealizada = int.TryParse(lerTela, out opcao);
-            if (conversaoRealizada == true)
-            {
-                Caixa caixa = new Caixa();
-                switch (opcao)
-                {
-                    case (int)Amigos.Listar:
-                        caixa.Listar(caixas);
-                        break;
-                    case (int)Amigos.Cadastrar:
-                        caixa.Cadastrar(ref caixas);
-                        break;
-                    case (int)Amigos.Editar:
-                        caixa.Editar(caixas);
-                        break;
-                    case (int)Amigos.Excluir:
-                        caixa.Excluir(caixas);
+                    case 4:
+                        ViewEmprestimos viewEmprestimos = new ViewEmprestimos(ref caixas, ref pessoas, ref revistas, ref emprestimos);
+                        viewEmprestimos.Menu();
                         break;
                     default:
                         Error.Mensagem();
@@ -197,141 +80,6 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.ReadKey();
                 Console.Clear();
             }
-        }
-        public static void MenuRevista()
-        {
-            string lerTela;
-            int opcao;
-            bool conversaoRealizada;
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("---------------------------Revistas---------------------------");
-            Console.ResetColor();
-            Console.WriteLine("--------------------------------------------------------------");
-            Console.Write($"|| ({Revistas.Listar.GetHashCode()}) {Revistas.Listar} |");
-            Console.Write($"| ({Revistas.Cadastrar.GetHashCode()}) {Revistas.Cadastrar} |");
-            Console.Write($"| ({Revistas.Editar.GetHashCode()}) {Revistas.Editar} |");
-            Console.Write($"| ({Revistas.Excluir.GetHashCode()}) {Revistas.Excluir} ||");
-            Console.WriteLine("\n--------------------------------------------------------------");
-            Console.Write("Informe a opção desejada: ");
-            lerTela = Console.ReadLine();
-            if (lerTela == "")
-            {
-                Console.Clear();
-                return;
-            }
-            conversaoRealizada = int.TryParse(lerTela, out opcao);
-            if (conversaoRealizada == true)
-            {
-                Revista revista = new Revista();
-                switch (opcao)
-                {
-                    case (int)Amigos.Listar:
-                        revista.Listar(revistas, caixas);
-                        break;
-                    case (int)Amigos.Cadastrar:
-                        revista.Cadastrar(revistas, caixas);
-                        break;
-                    case (int)Amigos.Editar:
-                        revista.Editar(ref revistas, caixas);
-                        break;
-                    case (int)Amigos.Excluir:
-                        revista.Excluir(revistas, caixas);
-                        break;
-                    default:
-                        Error.Mensagem();
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
-                }
-            }
-            else
-            {
-                Error.Mensagem();
-                Console.ReadKey();
-                Console.Clear();
-            }
-        }
-        public static void MenuEmprestimo()
-        {
-            string lerTela;
-            int opcao;
-            bool conversaoRealizada;
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("------------------------------------------------------Emprestimos------------------------------------------------------");
-            Console.ResetColor();
-            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------------");
-            Console.Write($"|| ({Emprestimos.Listar.GetHashCode()}) {Emprestimos.Listar} |");
-            Console.Write($"| ({Emprestimos.Cadastrar.GetHashCode()}) {Emprestimos.Cadastrar} |");
-            Console.Write($"| ({Emprestimos.Editar.GetHashCode()}) {Emprestimos.Editar} |");
-            Console.Write($"| ({Emprestimos.Excluir.GetHashCode()}) {Emprestimos.Excluir} |");
-            Console.Write($"| ({Emprestimos.Fechar.GetHashCode()}) {Emprestimos.Fechar} |");
-            Console.Write($"| ({Emprestimos.Mensal.GetHashCode()}) {Emprestimos.Mensal} |");
-            Console.Write($"| ({Emprestimos.Abertos.GetHashCode()}) {Emprestimos.Abertos} |");
-            Console.Write($"| ({Emprestimos.Diario.GetHashCode()}) {Emprestimos.Diario} ||");
-            Console.WriteLine("\n-----------------------------------------------------------------------------------------------------------------------");
-            Console.Write("Informe a opção desejada: ");
-            lerTela = Console.ReadLine();
-            if (lerTela == "")
-            {
-                Console.Clear();
-                return;
-            }
-            conversaoRealizada = int.TryParse(lerTela, out opcao);
-            if (conversaoRealizada == true)
-            {
-                Emprestimo emprestimo = new Emprestimo();
-                switch (opcao)
-                {
-                    case (int)Emprestimos.Listar:
-                        emprestimo.Listar(emprestimos, amigos, revistas, caixas);
-                        break;
-                    case (int)Emprestimos.Cadastrar:
-                        emprestimo.Cadastrar(emprestimos, amigos, revistas, caixas);
-                        break;
-                    case (int)Emprestimos.Editar:
-                        emprestimo.Editar(emprestimos, amigos, revistas, caixas);
-                        break;
-                    case (int)Emprestimos.Excluir:
-                        emprestimo.Excluir(emprestimos, amigos, revistas, caixas);
-                        break;
-                    case (int)Emprestimos.Fechar:
-                        emprestimo.Fechar(emprestimos, amigos, revistas, caixas);
-                        break;
-                    case (int)Emprestimos.Mensal:
-                        emprestimo.Mensal(emprestimos, amigos, revistas, caixas);
-                        break;
-                    case (int)Emprestimos.Abertos:
-                        emprestimo.Abertos(emprestimos, amigos, revistas, caixas);
-                        break;
-                    case (int)Emprestimos.Diario:
-                        emprestimo.Diario(emprestimos, amigos, revistas, caixas);
-                        break;
-                    default:
-                        Error.Mensagem();
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
-                }
-            }
-            else
-            {
-                Error.Mensagem();
-                Console.ReadKey();
-                Console.Clear();
-            }
-        }
-    }
-    public class Error
-    {
-        public static void Mensagem()
-        {
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.BackgroundColor = ConsoleColor.Gray;
-            Console.WriteLine("-----------------------------Erro-----------------------------");
-            Console.ResetColor();
-            Console.WriteLine("Página não encontrada");
         }
     }
 }
