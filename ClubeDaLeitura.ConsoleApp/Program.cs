@@ -4,20 +4,20 @@ namespace ClubeDaLeitura.ConsoleApp
 {
     internal class Program
     {
-        public static PessoaAntiga[] amigos = new PessoaAntiga[100];
         public static ClassPessoa[] pessoas = new ClassPessoa[100];
         public static ClassCaixa[] caixas = new ClassCaixa[100];
         public static ClassRevista[] revistas = new ClassRevista[100];
         public static ClassEmprestimo[] emprestimos = new ClassEmprestimo[100];
+        public static ClassCategoriaRevista[] categoriaRevistas = new ClassCategoriaRevista[100];
         public static bool sairSistema = false;
         static void Main(string[] args)
         {
-            PessoaAntiga.PopularPessoas(ref amigos);
             ViewCaixas.PopularCaixas(caixas);
             ViewRevistas.PopularArrayRevistas(revistas);
             ViewEmprestimos.PopularArray(emprestimos);
             ViewPessoas.PopularPessoas(ref pessoas);
-            while(sairSistema == false)
+            ViewCategoriaRevista.PopularCategoriasRevistas(ref categoriaRevistas);
+            while (sairSistema == false)
             {
                 Menu();
             }
@@ -60,7 +60,7 @@ namespace ClubeDaLeitura.ConsoleApp
                         viewCaixa.Menu();
                         break;
                     case 3:
-                        ViewRevistas viewRevista = new ViewRevistas(ref revistas, ref caixas);
+                        ViewRevistas viewRevista = new ViewRevistas(ref revistas, ref caixas, ref categoriaRevistas);
                         viewRevista.Menu();
                         break;
                     case 4:

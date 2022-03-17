@@ -10,11 +10,18 @@ namespace ClubeDaLeitura.ConsoleApp
     {
         ClassRevista[] revistas;
         ClassCaixa[] caixas;
+        ClassCategoriaRevista[] categorias;
 
         public ViewRevistas(ref ClassRevista[] r, ref ClassCaixa[] c)
         {
             revistas = r;
             caixas = c;
+        }
+        public ViewRevistas(ref ClassRevista[] r, ref ClassCaixa[] c, ref ClassCategoriaRevista[] cat)
+        {
+            revistas = r;
+            caixas = c;
+            categorias = cat;
         }
         public void Menu()
         {
@@ -27,6 +34,7 @@ namespace ClubeDaLeitura.ConsoleApp
             Console.Write($"| (2) Cadastrar |");
             Console.Write($"| (3) Editar |");
             Console.Write($"| (4) Excluir ||");
+            Console.Write($"| (5) Categorias ||");
             Console.WriteLine("\n--------------------------------------------------------------");
             Console.Write("Informe a opção desejada: ");
             string lerTela = Console.ReadLine();
@@ -40,17 +48,21 @@ namespace ClubeDaLeitura.ConsoleApp
             {
                 switch (opcao)
                 {
-                    case (int)Amigos.Listar:
+                    case 1:
                         Listar();
                         break;
-                    case (int)Amigos.Cadastrar:
+                    case 2:
                         Cadastrar();
                         break;
-                    case (int)Amigos.Editar:
+                    case 3:
                         Editar();
                         break;
-                    case (int)Amigos.Excluir:
+                    case 4:
                         Excluir();
+                        break;
+                    case 5:
+                        ViewCategoriaRevista categoriaRevista = new ViewCategoriaRevista(ref categorias);
+                        categoriaRevista.Menu();
                         break;
                     default:
                         Error.Mensagem();

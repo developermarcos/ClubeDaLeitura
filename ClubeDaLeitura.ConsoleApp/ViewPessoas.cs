@@ -37,16 +37,16 @@ namespace ClubeDaLeitura.ConsoleApp
             {
                 switch (opcao)
                 {
-                    case (int)Amigos.Listar:
+                    case 1:
                         Listar();
                         break;
-                    case (int)Amigos.Cadastrar:
+                    case 2:
                         Cadastrar();
                         break;
-                    case (int)Amigos.Editar:
+                    case 3:
                         Editar();
                         break;
-                    case (int)Amigos.Excluir:
+                    case 4:
                         Excluir();
                         break;
                     default:
