@@ -121,9 +121,9 @@ namespace ClubeDaLeitura.ConsoleApp
                 categoriaEdicao.ID = idEdicao;
                 
                 DataInput(ref categoriaEdicao, ref sairMetodo, true);
-
+                
                 categoriaEdicao.nome = categoriaEdicao.nome == "" ? categoriaRevistas[categoriaEdicao.ID].nome : categoriaEdicao.nome;
-                categoriaEdicao.quantidadeDiasEmprestimo = categoriaEdicao.quantidadeDiasEmprestimo == null ? categoriaRevistas[categoriaEdicao.ID].quantidadeDiasEmprestimo : categoriaEdicao.quantidadeDiasEmprestimo;
+                categoriaEdicao.quantidadeDiasEmprestimo = categoriaEdicao.quantidadeDiasEmprestimo == default ? categoriaRevistas[categoriaEdicao.ID].quantidadeDiasEmprestimo : categoriaEdicao.quantidadeDiasEmprestimo;
 
 
                 categoriaRevistas[categoriaEdicao.ID] = categoriaEdicao;
@@ -175,11 +175,11 @@ namespace ClubeDaLeitura.ConsoleApp
                     cat.Print();
             }
         }
-        private void DataInput(ref ClassCategoriaRevista categoriaCadastroEdicao, ref bool sairMetodo, bool edicaoPessoa)
+        private void DataInput(ref ClassCategoriaRevista categoriaCadastroEdicao, ref bool sairMetodo, bool edicaoCategoria)
         {
             Console.Write("Informe o nome: ");
             categoriaCadastroEdicao.nome = Console.ReadLine();
-            if (categoriaCadastroEdicao.nome == "" && edicaoPessoa == false)
+            if (categoriaCadastroEdicao.nome == "" && edicaoCategoria == false)
             {
                 sairMetodo = true;
                 return;
@@ -188,15 +188,16 @@ namespace ClubeDaLeitura.ConsoleApp
             {
                 Console.Write("Informe a quantidade de dias máximo para empréstimo de revistas desta categorias: ");
                 string lerTela = Console.ReadLine();
-                if (lerTela == "" && edicaoPessoa == false)
-                {
-                    sairMetodo = true;
-                    return;
-                }
                 bool conversaoRealizada = int.TryParse(lerTela, out int numero);
-                if (conversaoRealizada == true)
+                if (conversaoRealizada == true && edicaoCategoria == true)
                 {
                     categoriaCadastroEdicao.quantidadeDiasEmprestimo = numero;
+                    sairMetodo = true;
+                    break;
+                }
+                else if (lerTela == "")
+                {
+                    sairMetodo= true;
                     break;
                 }
                 else
