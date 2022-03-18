@@ -24,6 +24,7 @@ namespace ClubeDaLeitura.ConsoleApp
             Console.Write($"| (2) Cadastrar |");
             Console.Write($"| (3) Editar |");
             Console.Write($"| (4) Excluir ||");
+            Console.Write($"| (5) Amigos com multas ||");
             Console.WriteLine("\n-----------------------------------------------------------------");
             Console.Write("Informe a opção desejada: ");
             string lerTela = Console.ReadLine();
@@ -48,6 +49,9 @@ namespace ClubeDaLeitura.ConsoleApp
                         break;
                     case 4:
                         Excluir();
+                        break;
+                    case 5:
+                        Multas();
                         break;
                     default:
                         Error.Mensagem();
@@ -83,7 +87,8 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
                 return;
             }
-
+            ClassMulta[] multas = new ClassMulta[3];
+            pessoas[pessoaCadastro.ID].multas = multas;
             pessoas[pessoaCadastro.ID] = pessoaCadastro;
 
             Console.Clear();
@@ -165,6 +170,48 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
             }
         }
+        public void Multas()
+        {
+            Console.WriteLine("\n*Multas*");
+            Console.WriteLine("Listagem de Amigos com multas.");
+            PrintaAllWichMultasStatusOpen();
+
+            Console.Write("\nPressione enter para voltar ou informe o ID do amigo para listar as multas: ");
+            string lerDados = Console.ReadLine();
+
+            bool conversaoRealizada = int.TryParse(lerDados, out int idPessoa);
+            if (conversaoRealizada == true && PosicaoNotNullWichMultas(idPessoa) == true)
+            {
+                PrintAllMultasByIdStatusOpen(idPessoa);
+                Console.Write("Informe o ID da multa que deseja baixar:");
+                lerDados = Console.ReadLine();
+
+                conversaoRealizada = int.TryParse(lerDados, out int idMulta);
+                if(conversaoRealizada == true && PositionMultasNotNull(idPessoa, idMulta) == true)
+                {
+                    ClassMulta[] multaExclusao = pessoas[idPessoa].multas;
+                    
+                    multaExclusao[idMulta].aberta = false;
+                    pessoas[idPessoa].multas = multaExclusao;
+                    
+                    Console.Clear();
+                    Console.WriteLine("Multa baixada com sucesso!");
+                }
+                else
+                {
+                    Console.WriteLine("Muita não encontrada!");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                
+            }
+            else
+            {
+                Console.WriteLine("Usuário não encontrado");
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
         #endregion
 
         #region Métodos auxiliares
@@ -174,6 +221,40 @@ namespace ClubeDaLeitura.ConsoleApp
             {
                 if (pessoa != null)
                     pessoa.Print();
+            }
+        }
+        public void PrintaAllWichMultasStatusOpen()
+        {
+            for (int i = 0; i < pessoas.Length; i++)
+            {
+                if (pessoas[i] != null && pessoas[i].multas != null) 
+                { 
+                    ClassMulta[] multas = pessoas[i].multas;
+                    bool existeMultaAberta = false;
+                    for (int j = 0; j < multas.Length; j++)
+                    {
+                        existeMultaAberta = PositionMultasStatusOpen(i, j);
+                        if (existeMultaAberta == true)
+                            break;
+                    }
+                    if (pessoas[i] != null && existeMultaAberta == true)
+                        pessoas[i].Print();
+                }
+            }
+        }
+        public void PrintAllMultasByIdStatusOpen(int id)
+        {
+            ClassMulta[] multas = pessoas[id].multas;
+            int contador = 0;
+            while (true)
+            {
+                if (multas[contador] != null)
+                {
+                    multas[contador].Print();
+                }
+                if (contador == (multas.Length - 1))
+                    break;
+                contador++;
             }
         }
         private void DataInput(ref ClassPessoa pessoaCadastroEdicao, ref bool sairMetodo, bool edicaoPessoa)
@@ -231,10 +312,44 @@ namespace ClubeDaLeitura.ConsoleApp
 
             return notNull;
         }
+        public bool PositionMultasNotNull(int idPessoa, int idMulta)
+        {
+            bool notNull = false;
+            ClassMulta[] multas = pessoas[idPessoa].multas;
+            if (multas[idMulta] != null)
+                notNull = true;
+
+            return notNull;
+        }
+        public bool PositionMultasStatusOpen(int idPessoa, int idMulta)
+        {
+            bool notNull = false;
+            ClassMulta[] multas = pessoas[idPessoa].multas;
+            if (multas[idMulta] != null && multas[idMulta].aberta == true)
+                notNull = true;
+
+            return notNull;
+        }
+        public bool PosicaoNotNullWichMultas(int id)
+        {
+            bool notNull = false;
+
+            if (pessoas[id] != null && pessoas[id].multas != null)
+                notNull = true;
+
+            return notNull;
+        }
         public static void PopularPessoas(ref ClassPessoa[] pessoas)
         {
-            ClassPessoa p1 = new ClassPessoa(0, "Marcos Lima", "Adriana", "123", "rua 1");
-            ClassPessoa p2 = new ClassPessoa(1, "Patricia Carsten", "Andreia", "321", "rua 2");
+            ClassMulta[] multa1 = new ClassMulta[3];
+            ClassMulta[] multa2 = new ClassMulta[3];
+            ClassMulta multinha1 = new (0, "Multa de teste ", 3.00m, true);
+            ClassMulta multinha2 = new(0, "Multa de teste 2", 5.00m, true);
+            multa1[0] = multinha1;
+            multa2[0] = multinha2;
+            
+            ClassPessoa p1 = new ClassPessoa(0, "Marcos Lima", "Adriana", "123", "rua 1", multa1);
+            ClassPessoa p2 = new ClassPessoa(1, "Patricia Carsten", "Andreia", "321", "rua 2", multa2);
             pessoas[0] = p1;
             pessoas[1] = p2;
         }
