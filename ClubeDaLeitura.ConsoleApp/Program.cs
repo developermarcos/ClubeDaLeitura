@@ -64,7 +64,7 @@ namespace ClubeDaLeitura.ConsoleApp
                         viewRevista.Menu();
                         break;
                     case 4:
-                        ViewEmprestimos viewEmprestimos = new ViewEmprestimos(ref caixas, ref pessoas, ref revistas, ref emprestimos);
+                        ViewEmprestimos viewEmprestimos = new ViewEmprestimos(ref caixas, ref pessoas, ref revistas, ref emprestimos, ref categoriaRevistas);
                         viewEmprestimos.Menu();
                         break;
                     default:

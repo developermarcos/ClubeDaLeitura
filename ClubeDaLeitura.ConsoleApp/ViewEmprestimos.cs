@@ -12,12 +12,14 @@ namespace ClubeDaLeitura.ConsoleApp
         ClassPessoa[] pessoas;
         ClassRevista[] revistas;
         ClassEmprestimo[] emprestimos;
-        public ViewEmprestimos(ref ClassCaixa[] c, ref ClassPessoa[] p, ref ClassRevista[] r, ref ClassEmprestimo[] e)
+        ClassCategoriaRevista[] categorias;
+        public ViewEmprestimos(ref ClassCaixa[] c, ref ClassPessoa[] p, ref ClassRevista[] r, ref ClassEmprestimo[] e, ref ClassCategoriaRevista[] cat)
         {
-            caixas = c;
-            pessoas = p;
-            revistas = r;
-            emprestimos = e;
+            this.caixas = c;
+            this.pessoas = p;
+            this.revistas = r;
+            this.emprestimos = e;
+            this.categorias = cat;
         }
         public void Menu()
         {
@@ -203,8 +205,7 @@ namespace ClubeDaLeitura.ConsoleApp
         public void Fechar()
         {
             bool sairMetodo = false;
-            ClassEmprestimo emprestimoExclusao = new ClassEmprestimo();
-
+            
             Console.WriteLine("\n *Encerrar empréstimo*");
             Console.WriteLine("Listagem de Emprestimos cadastrados");
             PrintAll();
@@ -217,7 +218,13 @@ namespace ClubeDaLeitura.ConsoleApp
                 bool conversaoRealizada = int.TryParse(lerTela, out int idEdicao);
                 if (conversaoRealizada == true && PositionNotNull(idEdicao) == true)
                 {
-                    emprestimoExclusao.ID = idEdicao;
+                    
+                    int diferencaDias = (DateTime.Today - DateTime.Parse(emprestimos[idEdicao].dataDevolucao.ToString())).Days;
+                    if (diferencaDias > 0)
+                    {
+                        Console.WriteLine($"Deverá ser cobrado uma taxa sobre {diferencaDias} dias de atraso");
+                        Console.ReadKey();
+                    }
                     emprestimos[idEdicao].emprestimoAberto = false;
                     break;
                 }
@@ -310,7 +317,7 @@ namespace ClubeDaLeitura.ConsoleApp
             }
 
             Console.WriteLine("\nListagem de revistas");
-            ViewRevistas viewRevistas = new ViewRevistas(ref revistas, ref caixas);
+            ViewRevistas viewRevistas = new ViewRevistas(ref revistas, ref caixas, ref categorias);
             viewRevistas.PrintAll();
             while (true)
             {
@@ -344,11 +351,13 @@ namespace ClubeDaLeitura.ConsoleApp
                 if ((conversaoRealizada == true && lerTela.Length == 10))
                 {
                     emprestimoCadastro.dataEmprestimo = dataEmprestimo;
+                    emprestimoCadastro.dataDevolucao = dataEmprestimo.AddDays(categorias[emprestimoCadastro.idRevista].quantidadeDiasEmprestimo);
                     break;
                 }
                 else if (lerTela == "")
                 {
-                    emprestimoCadastro.dataEmprestimo = lerTela == "" ? emprestimos[emprestimoCadastro.ID].dataEmprestimo : dataEmprestimo;
+                    emprestimoCadastro.dataEmprestimo = emprestimos[emprestimoCadastro.ID].dataEmprestimo;
+                    emprestimoCadastro.dataDevolucao = emprestimos[emprestimoCadastro.ID].dataDevolucao;
                     sairMetodo = true;
                     break;
                 }
@@ -360,26 +369,7 @@ namespace ClubeDaLeitura.ConsoleApp
                 Console.Clear();
                 return;
             }
-
-            while (true)//Input + validação Data emprestimo
-            {
-                Console.Write("Informe o data de devolução do empréstimo da revista (00/00/0000): ");
-                string lerTela = Console.ReadLine();
-                bool conversaoRealizada = DateTime.TryParse(lerTela, out DateTime dataDelovucao);
-                if ((conversaoRealizada == true && lerTela.Length == 10) && emprestimoCadastro.dataEmprestimo <= dataDelovucao)
-                {
-                    emprestimoCadastro.dataDevolucao = dataDelovucao;
-                    break;
-                }
-                else if (lerTela == "")
-                {
-                    emprestimoCadastro.dataDevolucao = lerTela == "" ? emprestimos[emprestimoCadastro.ID].dataDevolucao : dataDelovucao;
-                    sairMetodo = true;
-                    break;
-                }
-                else
-                    Console.WriteLine("Data informada com formato incorreto ou menor que a data do empréstimo.");
-            }
+            
             if (sairMetodo == true && ehEdicao == false)
             {
                 Console.Clear();

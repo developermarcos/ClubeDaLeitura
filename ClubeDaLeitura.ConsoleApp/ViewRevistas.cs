@@ -12,11 +12,6 @@ namespace ClubeDaLeitura.ConsoleApp
         ClassCaixa[] caixas;
         ClassCategoriaRevista[] categorias;
 
-        public ViewRevistas(ref ClassRevista[] r, ref ClassCaixa[] c)
-        {
-            revistas = r;
-            caixas = c;
-        }
         public ViewRevistas(ref ClassRevista[] r, ref ClassCaixa[] c, ref ClassCategoriaRevista[] cat)
         {
             revistas = r;
