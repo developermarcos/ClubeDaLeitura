@@ -9,23 +9,25 @@ namespace ClubeDaLeitura.ConsoleApp
     
     internal class ClassRevista
     {
-        public int revistaId, revistaCaixaId;
+        public int ID;
+        public int CaixaID;
+        public int categoriaID;
         public string numeroEdicao;
         public DateTime anoRevista;
         public string tipoColecao;
-        public bool posicaoPreenchida;
         public ClassRevista() { }
-        public ClassRevista(int revistaId, string numeroEdicao, DateTime anoRevista, string tipoColecao, int revistaCaixaId)
+        public ClassRevista(int revistaId, string numeroEdicao, DateTime anoRevista, string tipoColecao, int revistaCaixaId, int categoriaRevista)
         {
-            this.revistaId = revistaId;
+            this.ID = revistaId;
             this.numeroEdicao = numeroEdicao;
             this.anoRevista = anoRevista;
             this.tipoColecao = tipoColecao;
-            this.revistaCaixaId = revistaCaixaId;
+            this.CaixaID = revistaCaixaId;
+            this.categoriaID = categoriaRevista;
         }
-        public void Print(ClassCaixa caixa)
+        public void Print(ClassCaixa caixa, ClassCategoriaRevista categoria)
         {
-            Console.WriteLine($"ID: {this.revistaId} | Edição: {this.numeroEdicao} | Ano: {this.anoRevista.ToString("dd/MM/yyyy")} | Tipo coleção: {this.tipoColecao} | Caixa: {caixa.etiqueta} - {caixa.cor}");
+            Console.WriteLine($"ID: {this.ID} | Edição: {this.numeroEdicao} | Categoria: {categoria.nome} | Ano: {this.anoRevista.ToString("dd/MM/yyyy")} | Tipo coleção: {this.tipoColecao} | Caixa: {caixa.etiqueta} - {caixa.cor}");
         }
     }
 }

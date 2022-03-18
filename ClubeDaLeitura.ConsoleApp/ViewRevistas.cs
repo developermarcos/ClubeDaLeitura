@@ -89,16 +89,20 @@ namespace ClubeDaLeitura.ConsoleApp
         }
         public void Cadastrar()
         {
+            bool sairMetodo = false;
             ClassRevista revistaCadastro = new ClassRevista();
 
             Console.WriteLine("\n*Cadastrar*");
 
-            revistaCadastro.revistaId = PositionToInsert();
-            if (revistaCadastro.revistaId != -1)
+            revistaCadastro.ID = PositionToInsert();
+            if (revistaCadastro.ID != -1)
             {
-                DataInput(ref revistaCadastro);
-                revistaCadastro.posicaoPreenchida = true;
-                revistas[revistaCadastro.revistaId] = revistaCadastro;
+                Console.WriteLine("Pressione enter para voltar ao menu ou informe o parametros para seguir no cadastro.");
+                DataInput(ref revistaCadastro, ref sairMetodo, false);
+                if (sairMetodo == true)
+                    return;
+                
+                revistas[revistaCadastro.ID] = revistaCadastro;
 
                 Console.Clear();
                 Console.WriteLine("Caixa cadastrada com sucesso!");
@@ -112,6 +116,7 @@ namespace ClubeDaLeitura.ConsoleApp
         }
         public void Editar()
         {
+            bool sairMetodo = false;
             ClassRevista revistaEdicao = new ClassRevista();
 
             Console.WriteLine("\n*Editar*");
@@ -130,17 +135,25 @@ namespace ClubeDaLeitura.ConsoleApp
                 bool conversaoRealizada = int.TryParse(lerTela, out int idEdicao);
                 if (conversaoRealizada == true && PositionNotNull(idEdicao) == true)
                 {
-                    revistaEdicao.revistaId = idEdicao;
+                    revistaEdicao.ID = idEdicao;
                     break;
                 }
             }
             //revistaId numeroEdicao=V anoRevista=V tipoColecao=V revistaCaixaId=V
-            if (revistaEdicao.revistaId != -1 &&  revistaEdicao.revistaId != default)
+            if (revistaEdicao.ID != -1 &&  revistaEdicao != null)
             {
-                DataInput(ref revistaEdicao);
+                Console.WriteLine("\nPressione enter para manter a informação anterior ou informe o parametros anterar o cadastro.");
+                DataInput(ref revistaEdicao, ref sairMetodo, true);
 
                 //Insere no array
-                revistas[revistaEdicao.revistaId] = revistaEdicao;
+                revistaEdicao.ID = revistaEdicao.ID == default? revistas[revistaEdicao.ID].ID : revistaEdicao.ID ;
+                revistaEdicao.CaixaID = revistaEdicao.CaixaID  == default ? revistas[revistaEdicao.ID].CaixaID : revistaEdicao.CaixaID ;
+                revistaEdicao.categoriaID = revistaEdicao.categoriaID  == default ? revistas[revistaEdicao.ID].categoriaID : revistaEdicao.categoriaID ;
+                revistaEdicao.numeroEdicao = revistaEdicao.numeroEdicao  == null ? revistas[revistaEdicao.ID].numeroEdicao : revistaEdicao.numeroEdicao ;
+                revistaEdicao.anoRevista = revistaEdicao.anoRevista  == default ? revistas[revistaEdicao.ID].anoRevista : revistaEdicao.anoRevista ;
+                revistaEdicao.tipoColecao = revistaEdicao.tipoColecao  == null ? revistas[revistaEdicao.ID].tipoColecao : revistaEdicao.tipoColecao ;
+
+                revistas[revistaEdicao.ID] = revistaEdicao;
 
                 Console.Clear();
                 Console.WriteLine("Caixa editada com sucesso!");
@@ -180,49 +193,134 @@ namespace ClubeDaLeitura.ConsoleApp
         #endregion
 
         #region Métodos auxiliares
-        private void DataInput(ref ClassRevista revista)
+        private void DataInput(ref ClassRevista revista, ref bool sairMetodo, bool ehEdicao)
         {
-            Console.Write("Informe o numero de edição da revista: ");
-            revista.numeroEdicao = Console.ReadLine();
+            while (true)
+            {
+                Console.Write("Informe o numero de edição: ");
+                string lerTela = Console.ReadLine();
+                if (lerTela == "" && ehEdicao == false)
+                {
+                    sairMetodo = true;
+                    break;
+                }
+                else if (lerTela == "" && ehEdicao == true)
+                    break;
+
+                if (lerTela != "")
+                {
+                    revista.numeroEdicao = lerTela;
+                    break;
+                }
+              
+            }
+            if (sairMetodo == true)
+                return;
+            while (true)
+            {
+                Console.Write("Informe o tipo da coleção : ");
+                string lerTela = Console.ReadLine();
+
+                if (lerTela == "" && ehEdicao == false)
+                {
+                    sairMetodo = true;
+                    break;
+                }
+                else if (lerTela == "" && ehEdicao == true)
+                    break;
+
+                if (lerTela != "")
+                {
+                    revista.tipoColecao = lerTela;
+                    break;
+                }
+            }
+            if (sairMetodo == true)
+                return;
+
 
             while (true)//Input + validação Data criacao
             {
                 Console.Write("Informe o data de fabricação da revista (00/00/0000): ");
                 string lerTela = Console.ReadLine();
                 bool conversaoRealizada = DateTime.TryParse(lerTela, out DateTime dataCriacaoRevista);
+                
+                if (lerTela == "" && ehEdicao == false)
+                {
+                    sairMetodo = true;
+                    break;
+                }
+                else if (lerTela == "" && ehEdicao == true)
+                    break;
+                
+
                 if (conversaoRealizada == true && lerTela.Length == 10)
                 {
                     revista.anoRevista = dataCriacaoRevista;
                     break;
                 }
-                else if (lerTela == "")
-                {
-                    break;
-                }
                 else
                     Console.WriteLine("Data informada com formato incorreto.");
             }
+            if (sairMetodo == true)
+                return;
 
             Console.WriteLine("\nLista de caixas cadastradas");
-            //Caixa.ImprimirCaixas(caixas);
+            ViewCaixas caixa = new ViewCaixas(ref caixas);
+            caixa.PrintAll();
 
             while (true)//Input + validação caixa para guardar revista
             {
                 int revistaCaixaId;
                 Console.Write("Informe a caixa que deseja guardar a revista: ");
                 string lerTela = Console.ReadLine();
-                if (lerTela == "")
+                if (lerTela == "" &&  ehEdicao == false)
+                {
+                    sairMetodo = true;
                     break;
-                //bool conversaoRealizada = int.TryParse(lerTela, out revistaCaixaId);
-                //if (conversaoRealizada == true && Caixa.ExisteNoArray(caixas, revistaCaixaId) == true)
-                //{
-                //    revista.revistaCaixaId = revistaCaixaId;
-                //    break;
-                //}
-                //else
-                //{
-                //    Console.WriteLine("\nCaixa informada não existe");
-                //}
+                }
+                else if(lerTela == "" &&  ehEdicao == true)
+                    break;
+                    
+                bool conversaoRealizada = int.TryParse(lerTela, out revistaCaixaId);
+                if (conversaoRealizada == true && caixa.PositionNotNull(revistaCaixaId) == true)
+                {
+                    revista.CaixaID = revistaCaixaId;
+                    break;
+                }
+                else
+                    Console.WriteLine("\nCaixa informada não existe");
+            }
+            if (sairMetodo == true)
+                return;
+
+            Console.WriteLine("\nLista de categorias cadastradas");
+            ViewCategoriaRevista categoria = new ViewCategoriaRevista(ref categorias);
+            categoria.PrintAll();
+
+            while (true)//Input + validação caixa para guardar revista
+            {
+                int revistaCategoriaId;
+                Console.Write("Informe a categoria que deseja guardar a revista: ");
+                string lerTela = Console.ReadLine();
+                if (lerTela == "" && ehEdicao == false)
+                {
+                    sairMetodo = true;
+                    break;
+                }
+                else if (lerTela == "" &&  ehEdicao == true)
+                    break;
+
+                bool conversaoRealizada = int.TryParse(lerTela, out revistaCategoriaId);
+                if (conversaoRealizada == true && categoria.PosicaoNotNull(revistaCategoriaId) == true)
+                {
+                    revista.categoriaID = revistaCategoriaId;
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("\nCategoria informada não existe");
+                }
             }
         }
         private int PositionToInsert()
@@ -246,7 +344,7 @@ namespace ClubeDaLeitura.ConsoleApp
             {
                 if (revista != null)
                 {
-                    revista.Print(caixas[revista.revistaCaixaId]);
+                    revista.Print(caixas[revista.CaixaID], categorias[revista.categoriaID]);
                 }
             }
         }
@@ -262,8 +360,8 @@ namespace ClubeDaLeitura.ConsoleApp
         public static void PopularArrayRevistas(ClassRevista[] revistas)
         {
             DateTime data = new DateTime(2020, 11, 21);
-            ClassRevista rev1 = new ClassRevista(0, "444", data, "Aventura", 0);
-            ClassRevista rev2 = new ClassRevista(1, "555", data, "Terror", 1);
+            ClassRevista rev1 = new ClassRevista(0, "444", data, "Aventura", 0, 1);
+            ClassRevista rev2 = new ClassRevista(1, "555", data, "Terror", 1, 0);
             revistas[0] = rev1;
             revistas[1] = rev2;
         }
