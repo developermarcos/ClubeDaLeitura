@@ -9,6 +9,7 @@ namespace ClubeDaLeitura.ConsoleApp
         public static ClassRevista[] revistas = new ClassRevista[100];
         public static ClassEmprestimo[] emprestimos = new ClassEmprestimo[100];
         public static ClassCategoriaRevista[] categoriaRevistas = new ClassCategoriaRevista[100];
+        public static ClassReserva[] reservas = new ClassReserva[100];
         public static bool sairSistema = false;
         static void Main(string[] args)
         {
@@ -17,6 +18,7 @@ namespace ClubeDaLeitura.ConsoleApp
             ViewEmprestimos.PopularArray(emprestimos);
             ViewPessoas.PopularPessoas(ref pessoas);
             ViewCategoriaRevista.PopularCategoriasRevistas(ref categoriaRevistas);
+            ViewReservas.PopularArray(ref reservas);
             while (sairSistema == false)
             {
                 Menu();
@@ -37,7 +39,7 @@ namespace ClubeDaLeitura.ConsoleApp
             Console.WriteLine("\n--------------------------Menu Principal--------------------------");
             Console.ResetColor();
             Console.WriteLine("------------------------------------------------------------------");
-            Console.WriteLine("|| {0,-5} || {1,-5} || {2,-5} || {3,-5} ||", "(1) Pessoas", "(2) Caixas", "(3) Revistas", "(4) Empréstimos");
+            Console.WriteLine("|| {0,-5} || {1,-5} || {2,-5} || {3,-5} || {4,-5} ||", "(1) Amigos", "(2) Caixas", "(3) Revistas", "(4) Empréstimos", "(5) Reservas");
             Console.WriteLine("------------------------------------------------------------------");
             Console.Write("Informe a opção desejada: ");
             string lerTela = Console.ReadLine();
@@ -66,6 +68,10 @@ namespace ClubeDaLeitura.ConsoleApp
                     case 4:
                         ViewEmprestimos viewEmprestimos = new ViewEmprestimos(ref caixas, ref pessoas, ref revistas, ref emprestimos, ref categoriaRevistas);
                         viewEmprestimos.Menu();
+                        break;
+                    case 5:
+                        ViewReservas viewReservas = new ViewReservas(ref caixas, ref categoriaRevistas, ref pessoas, ref revistas, ref reservas, ref emprestimos);
+                        viewReservas.Menu();
                         break;
                     default:
                         Error.Mensagem();

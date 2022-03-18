@@ -11,17 +11,23 @@ namespace ClubeDaLeitura.ConsoleApp
         public int ID;
         public DateTime dataReserva;
         public DateTime dataExpira;
-        public ClassPessoa pessoa;
-        public ClassRevista revista;
-        public ClassReserva(DateTime date, ClassPessoa pessoa, ClassRevista revista)
+        public int idPessoa;
+        public int idRevista;
+        public ClassReserva() { }
+        public ClassReserva(int id, DateTime dateReserva, DateTime dateExpira, int amigo, int revista)
         {
-            this.dataReserva = date;
-            this.pessoa = pessoa;
-            this.revista = revista;
+            this.ID = id;
+            this.dataReserva = dateReserva;
+            this.dataExpira = dateExpira;
+            this.idPessoa = amigo;
+            this.idRevista = revista;
         }
-        public void Print()
+        public void Print(ClassPessoa pessoa, ClassRevista revista)
         {
-            Console.WriteLine($"Reserva ID: {this.ID} | Amigo: {this.pessoa.nome} | Revista: {revista.numeroEdicao} | Data reserva: {dataReserva.ToString("dd/MM/aaaa")} | Validade: {dataExpira.ToString("dd/MM/aaaa")}");
+            DateTime dataExpira = new DateTime(this.dataExpira.Year, this.dataExpira.Month, this.dataExpira.Day);
+            DateTime dataAtual = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            string reservaStatus = DateTime.Compare(dataExpira, dataAtual) >= 0 ? "Reserva vigente" : "Reserva expirada";
+            Console.WriteLine($"Reserva ID: {this.ID} | Amigo: {pessoa.nome} | Revista: {revista.numeroEdicao} | Data reserva: {dataReserva.ToString("dd/MM/yyyy")} | Validade: {dataExpira.ToString("dd/MM/yyyy")} | Status {reservaStatus}");
         }
     }
 }

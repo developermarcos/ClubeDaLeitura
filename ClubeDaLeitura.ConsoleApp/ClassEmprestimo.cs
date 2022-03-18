@@ -26,7 +26,8 @@ namespace ClubeDaLeitura.ConsoleApp
         }
         public void Print(ClassPessoa amigo, ClassRevista revista)
         {
-            Console.WriteLine($"-ID: {this.ID} | Amigo: {amigo.nome} | Revista edição: {revista.numeroEdicao} | Data emprestimo: {this.dataEmprestimo.ToString("dd/MM/yyyy")} | Data devolução: {this.dataDevolucao.ToString("dd/MM/yyyy")} ");
+            string status = this.emprestimoAberto == true ? "Aberto" : "Fechado";
+            Console.WriteLine($"-ID: {this.ID} | Amigo: {amigo.nome} | Revista edição: {revista.numeroEdicao} | Data emprestimo: {this.dataEmprestimo.ToString("dd/MM/yyyy")} | Data devolução: {this.dataDevolucao.ToString("dd/MM/yyyy")} | Status: {status}");
         }
         
     }

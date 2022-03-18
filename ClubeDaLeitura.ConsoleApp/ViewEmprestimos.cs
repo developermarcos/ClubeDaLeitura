@@ -222,7 +222,22 @@ namespace ClubeDaLeitura.ConsoleApp
                     int diferencaDias = (DateTime.Today - DateTime.Parse(emprestimos[idEdicao].dataDevolucao.ToString())).Days;
                     if (diferencaDias > 0)
                     {
-                        Console.WriteLine($"Deverá ser cobrado uma taxa sobre {diferencaDias} dias de atraso");
+                        Console.WriteLine($"Deverá ser cobrado uma taxa sobre {diferencaDias} dias de atraso. O custo diário é de R$ 2,00");
+                        Console.WriteLine("Acesse o cadastro de amigos e no menu multas poderá ser baixado essa pendência.");
+                        
+                        ClassMulta[] multas = pessoas[emprestimos[idEdicao].idAmigo].multas;
+                        int idCadastroMulta = 0;
+                        for (int i = 0; i < multas.Length; i++)
+                        {
+                            if (multas[i] == null)
+                            {
+                                idCadastroMulta = i;
+                                break;
+                            }
+                        }
+                        ClassMulta novaMulta = new ClassMulta(idCadastroMulta, $"Multa por {diferencaDias} em atraso", diferencaDias * 2.00m, diferencaDias > 0 ? true : false);
+                        multas[idCadastroMulta] = novaMulta;
+                        pessoas[emprestimos[idEdicao].idAmigo].multas = multas;
                         Console.ReadKey();
                     }
                     emprestimos[idEdicao].emprestimoAberto = false;
@@ -291,6 +306,7 @@ namespace ClubeDaLeitura.ConsoleApp
         #region Métodos auxiliares
         private void DataInput(ref bool sairMetodo, ref ClassEmprestimo emprestimoCadastro, bool ehEdicao)
         {
+            bool existeMulta = false;
             while (true)
             {
                 Console.Write("Para sair pressione enter ou informe o ID do amigo: ");
@@ -299,7 +315,24 @@ namespace ClubeDaLeitura.ConsoleApp
                 ViewPessoas viewPessoa = new ViewPessoas(ref pessoas);
                 if (conversaoRealizada == true && viewPessoa.PosicaoNotNull(idCadastro) == true)
                 {
-                    emprestimoCadastro.idAmigo = idCadastro;
+                    
+                    ClassMulta[] multas = pessoas[idCadastro].multas;
+                    for (int i = 0; i < multas.Length; i++)
+                    {
+                        if(multas[i] != null)
+                        {
+                            existeMulta = true;
+                            break;
+                        }
+                    }
+                    if(existeMulta == true) { 
+                        Console.WriteLine($"O amigo {pessoas[idCadastro].nome} possui multa em aberto e não será possível realizar um novo empréstimo. Para baixar a dívida acesse o menu->amigo->amigos com multas");
+                        Console.WriteLine("Pressione enter para voltar ao menu.");
+                        sairMetodo = true;
+                        Console.ReadKey();
+                    }
+                    else
+                        emprestimoCadastro.idAmigo = idCadastro;
                     break;
                 }
                 else if (lerTela == "")
@@ -310,12 +343,11 @@ namespace ClubeDaLeitura.ConsoleApp
                 else
                     Console.Write("id do amigo informado não encontrado.\n");
             }
-            if (sairMetodo == true && ehEdicao == false)
+            if ((sairMetodo == true && ehEdicao == false) || existeMulta == true)
             {
                 Console.Clear();
                 return;
             }
-
             Console.WriteLine("\nListagem de revistas");
             ViewRevistas viewRevistas = new ViewRevistas(ref revistas, ref caixas, ref categorias);
             viewRevistas.PrintAll();
